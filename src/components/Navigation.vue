@@ -49,7 +49,7 @@
            active-class="cyan--text text--accent-4"
         >
 
-          <v-list-item v-for="(navigation, index) in nav" :key="index" >
+          <v-list-item v-for="(navigation, index) in nav" :key="index" :to="navigation.route">
             <v-list-item-icon>
               <v-icon>{{ navigation.icon }}</v-icon>
             </v-list-item-icon>
