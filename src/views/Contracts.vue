@@ -1,5 +1,7 @@
 <template>
-  <div></div>
+  <div>
+    <h1 class="text-center">Contracts</h1>
+  </div>
 </template>
 
 <script>
