@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="text-center">This is home page</h1>
+    <h1 class="text-center">Home</h1>
   </div>
 </template>
 
