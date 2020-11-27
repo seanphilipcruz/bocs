@@ -5,15 +5,15 @@
         <v-btn
           elevation="4"
           @click.stop="dialog = true">
-          New Agency
+          New Advertiser
         </v-btn>
       </v-col>
     </v-row>
 
     <v-row no-gutters class="justify-center">
       <v-data-table
-        :headers="agencyHeaders"
-        :items="agencies"
+        :headers="advertiserHeaders"
+        :items="advertisers"
         item-key="id"
         :items-per-page="10"
         class="elevation-1"
@@ -48,7 +48,7 @@
     <v-dialog v-model="dialog">
       <v-card>
         <v-card-title>
-          <span class="headline">New Agency</span>
+          <span class="headline">New Advertiser</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -57,33 +57,13 @@
                 cols="12"
                 md="6"
                 sm="6">
-                <v-text-field label="Advertiser Name" required aria-required="true" v-model="agency.agencyName"></v-text-field>
+                <v-text-field label="Advertiser Name" required aria-required="true" v-model="advertiser.advertiserName"></v-text-field>
               </v-col>
               <v-col
                 cols="12"
                 md="6"
                 sm="6">
-                <v-autocomplete label="Account Executive (AE)" required aria-required="true" v-model="agency.accountExecutive"></v-autocomplete>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col
-                cols="12"
-                md="4"
-                sm="4">
-                <v-text-field label="Agency Address" required aria-required="true" v-model="agency.address"></v-text-field>
-              </v-col>
-              <v-col
-                cols="12"
-                md="4"
-                sm="4">
-                <v-text-field label="Agency Contact" required aria-required="true" v-model="agency.contact"></v-text-field>
-              </v-col>
-              <v-col
-                cols="12"
-                md="4"
-                sm="4">
-                <v-select :items="accreditation" label="Accredited by KBP"></v-select>
+                <v-autocomplete label="Account Executive (AE)" required aria-required="true" v-model="advertiser.accountExecutive"></v-autocomplete>
               </v-col>
             </v-row>
           </v-container>
@@ -111,45 +91,33 @@
 </template>
 
 <script>
-import Form from 'vform';
+import Form from "vform";
 
 export default {
-  name: "Agencies",
+  name: "Advertisers",
   created() {
 
   },
   data: () => ({
     dialog: false,
     search: '',
-    agencyHeaders: [
+    advertiserHeaders: [
       { text: 'Id', align: 'start', sortable: false, value: 'id' },
-      { text: 'Agency Name', value: 'agencyName' },
+      { text: 'Advertiser', value: 'advertiserName' },
       { text: 'Account Executive (AE)', value: 'accountExecutive' },
-      { text: 'Contact Number', value: 'contact' },
-      { text: 'Address', value: 'address' },
-      { text: 'Accredited', value: 'accredited' },
       { text: 'Active', value: 'isActive' },
       { text: 'Modified', value: 'updated_at' },
       { text: 'Created', value: 'created_at' },
     ],
-    agencies: [],
-    accreditation: [
-      'Yes', 'No'
-    ],
-    agency: {
-      agencyName: '',
+    advertisers: [],
+    advertiser: {
+      advertiserName: '',
       accountExecutive: '',
-      contact: '',
-      address: '',
-      accredited: '',
       isActive: false,
     },
     form: new Form({
-      agencyName: '',
+      advertiserName: '',
       accountExecutive: '',
-      contact: '',
-      address: '',
-      accredited: '',
       isActive: false,
     }),
     date: new Date().toISOString().substr(0, 10),

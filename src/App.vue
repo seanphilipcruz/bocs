@@ -89,10 +89,12 @@ export default {
     nav: [
       { icon: 'mdi-home', title: 'Home', route: 'Home' },
       { icon: 'mdi-account-cog', title: 'Manage Accounts', route: 'Users' },
-      { icon: 'mdi-office-building-marker', title: 'Departments', route: 'Departments' },
+      { icon: 'mdi-map-marker', title: 'Departments', route: 'Departments' },
       { icon: 'mdi-office-building', title: 'Agencies', route: 'Agencies' },
+      { icon: 'mdi-account-supervisor', title: 'Advertisers', route: 'Advertisers' },
       { icon: 'mdi-briefcase', title: 'Contracts', route: 'Contracts' },
       { icon: 'mdi-currency-php', title: 'Sales', route: 'Sales' },
+      { icon: 'mdi-archive', title: 'Archives', route: 'Archives' },
       { icon: 'mdi-clipboard-list', title: 'Logs', route: 'Logs' }
     ]
   })
