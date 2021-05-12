@@ -69,7 +69,9 @@ class EmployeeController extends Controller
 
             Employee::create($request->all());
 
-            $this->Log('Added an Employee', Employee::latest()->first()->id, Auth::user()->id);
+            $latest_employee = Employee::latest()->get()->first();
+
+            $this->Log('Added an Employee named '. $latest_employee->first_name . ' ' . $latest_employee->last_name . '.', $latest_employee->id, Auth::user()->id);
 
             return response()->json(['status' => 'success', 'message' => 'An employee has been created!']);
         }
@@ -91,7 +93,7 @@ class EmployeeController extends Controller
 
             $employee->update($request->all());
 
-            $this->Log('Updated an Employee\'s Information', $employee->id, Auth::user()->id);
+            $this->Log('Updated '. $employee->first_name . '\'s Information', $employee->id, Auth::user()->id);
 
             return response()->json(['status' => 'success', 'message' => 'An employee\'s information has been updated!']);
         }

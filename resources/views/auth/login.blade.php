@@ -86,6 +86,7 @@
                 </div>
                 <form id="request_account_form" action="{{ route('account.request') }}">
                     @csrf
+                    <input type="hidden" name="account_request" value="1">
                     <div class="modal-body">
                         <div class="row">
                             <div class="col">

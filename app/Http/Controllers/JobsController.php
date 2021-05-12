@@ -59,9 +59,9 @@ class JobsController extends Controller
 
             $job->save();
 
-            $employee = auth()->user();
+            $employee = Auth::user();
 
-            $new_job = Job::latest()->get()->first();
+            $new_job = Job::latest()->first();
 
             $logs = new EmployeeLogs([
                 'action' => 'Created a new job description named ' . $new_job->job_description,
@@ -86,7 +86,7 @@ class JobsController extends Controller
             'level' => 'required'
         ]);
 
-        $employee = auth()->user();
+        $employee = Auth::user();
 
         if($validator->passes()) {
             $job->update($request->all());
