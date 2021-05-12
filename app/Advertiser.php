@@ -14,6 +14,6 @@ class Advertiser extends Model
     ];
 
     public function Contract() {
-        return $this->hasMany(Contract::class);
+        return $this->hasMany(Contract::class, 'advertiser_id');
     }
 }

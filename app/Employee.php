@@ -40,14 +40,14 @@ class Employee extends Authenticatable
     }
 
     public function AccountExecutiveLogs() {
-        return $this->hasMany(AccountExecutiveLogs::class);
+        return $this->hasMany(AccountExecutiveLogs::class, 'employee_id');
     }
 
     public function Logs() {
-        return $this->hasMany(EmployeeLogs::class);
+        return $this->hasMany(EmployeeLogs::class, 'employee_id');
     }
 
     public function Contract() {
-        return $this->hasMany(Contract::class);
+        return $this->hasMany(Contract::class, 'ae');
     }
 }

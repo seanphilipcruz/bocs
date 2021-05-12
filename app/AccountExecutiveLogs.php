@@ -23,7 +23,7 @@ class AccountExecutiveLogs extends Model
     ];
 
     public function Contract() {
-        return $this->belongsTo(Contract::class);
+        return $this->belongsTo(Contract::class, 'ae');
     }
 
     public function Employee() {

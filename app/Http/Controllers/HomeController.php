@@ -15,11 +15,11 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         // Active Contracts
-        $contracts = Contract::where('is_active', 1)->get();
+        $contracts = Contract::with('Agency', 'Advertiser', 'Employee')->where('is_active', 1)->get();
 
-        $users = Employee::with('Job')->get();
-        $agencies = Agency::where('is_active', 1)->get();
-        $advertisers = Advertiser::where('is_active', 1)->get();
+        $users = Employee::with('Job')->where('is_active', 1)->get();
+        $agencies = Agency::with('Contract')->where('is_active', 1)->get();
+        $advertisers = Advertiser::with('Contract')->where('is_active', 1)->get();
 
         // Get the latest sales of the current year
         $manilaSales = Sales::selectRaw('month, year, sum(gross_amount) as gross_sales')
