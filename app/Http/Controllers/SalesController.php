@@ -7,8 +7,11 @@ use App\Agency;
 use App\Employee;
 use App\Sales;
 use App\SalesLogs;
+use App\SalesRevision;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Validator;
@@ -25,28 +28,40 @@ class SalesController extends Controller
 
             $sale->executive = $sale->Contract->Employee->first_name[0] . $sale->Contract->Employee->middle_name[0] . $sale->Contract->Employee->last_name[0];
 
-            if($sale['type'] === 'airtime' || $sale['type'] === 'totalamount') {
+            if($sale['type'] == 'airtime' || $sale['type'] == 'totalamount') {
                 $sale['type'] = 'Air Time';
             }
 
-            if($sale['type'] === 'top10') {
+            if($sale['type'] == 'top10') {
                 $sale['type'] = 'Top 10 Sponsorship';
             }
 
-            if($sale['type'] === 'live') {
+            if($sale['type'] == 'live') {
                 $sale['type'] = 'Live Guesting/Interview';
             }
 
-            if($sale['type'] === 'DJDisc') {
+            if($sale['type'] == 'DJDisc') {
                 $sale['type'] = 'DJ Discussion';
             }
 
-            if($sale['type'] === 'Spots' || $sale['type'] === 'spots') {
+            if($sale['type'] == 'Spots' || $sale['type'] == 'spots') {
                 $sale['type'] = 'Spots';
             }
 
-            if($sale['type'] === 'totalprod') {
+            if($sale['type'] == 'totalprod') {
                 $sale['type'] = 'Production';
+            }
+
+            if($sale->Contract->agency_id === 0) {
+                $sale->Contract->agency_name = "<p class='badge badge-danger text-center'>undefined</p>";
+            } else {
+                $sale->Contract->agency_name = $sale->Contract->Agency->agency_name;
+            }
+
+            if($sale->Contract->advertiser_id === 0) {
+                $sale->Contract->advertiser_name = "<p class='badge badge-danger text-center'>undefined</p>";
+            } else {
+                $sale->Contract->advertiser_name = $sale->Contract->Advertiser->advertiser_name;
             }
 
             $sale->options = "" .
@@ -152,6 +167,9 @@ class SalesController extends Controller
                 return response()->json(['status' => 'success', 'message' => 'Invoice number has been added!']);
             }
 
+            // verify if the sales_id is revised
+            $revision = SalesRevision::where('sales_id', $sale->id);
+
             if($request['invoice_no'] != $sale['invoice_no']) {
                 $logs = new SalesLogs([
                     'sales_id' => $sale->id,
@@ -234,6 +252,30 @@ class SalesController extends Controller
                 ]);
 
                 $logs->save();
+
+                if($revision->count() > 1) {
+                    $revision->get()->first();
+
+                    $revision->amount = $request['amount'];
+                    $revision->version = $revision->version + 1;
+
+                    $revision->update();
+                } else {
+                    $sales_revision = new SalesRevision([
+                        'sales_id' => $sale['id'],
+                        'contract_id' => $sale['contract_id'],
+                        'month' => $sale['month'],
+                        'year' => $sale['year'],
+                        'type' => $sale['type'],
+                        'amount_type' => $sale['amount_type'],
+                        'amount' => $request['amount'],
+                        'gross_amount' => $sale['gross_amount'],
+                        'invoice_no' => $sale['invoice_no'],
+                        'version' => 1,
+                    ]);
+
+                    $sales_revision->save();
+                }
             }
 
             if($request['gross_amount'] != $sale['gross_amount']) {
@@ -248,6 +290,30 @@ class SalesController extends Controller
                 ]);
 
                 $logs->save();
+
+                if($revision->count() > 1) {
+                    $revision->get()->first();
+
+                    $revision->gross_amount = $request['gross_amount'];
+                    $revision->version = $revision->version + 1;
+
+                    $revision->update();
+                } else {
+                    $sales_revision = new SalesRevision([
+                        'sales_id' => $sale['id'],
+                        'contract_id' => $sale['contract_id'],
+                        'month' => $sale['month'],
+                        'year' => $sale['year'],
+                        'type' => $sale['type'],
+                        'amount_type' => $sale['amount_type'],
+                        'amount' => $sale['amount'],
+                        'gross_amount' => $request['gross_amount'],
+                        'invoice_no' => $sale['invoice_no'],
+                        'version' => 1,
+                    ]);
+
+                    $sales_revision->save();
+                }
             }
 
             $sale->update($request->all());
@@ -468,7 +534,9 @@ class SalesController extends Controller
                     $sales->gross_sales = number_format($sales->gross_sales, 2);
                 }
 
-                $gross_sales = number_format(array_sum($sales_report->where('month', date('d'))->pluck('gross_amount')->toArray()), 2);
+                $gross_sales = $sales_report->where('month', date('m'))->where('year', date('Y'))->pluck('gross_sales')->first(
+
+                );
 
                 return view('webpages.sales_monthly', compact('sales_report', 'gross_sales'));
             }

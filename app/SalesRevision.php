@@ -18,7 +18,6 @@ class SalesRevision extends Model
         'amount',
         'gross_amount',
         'invoice_no',
-        'date_created',
         'version'
     ];
 

@@ -18,27 +18,27 @@ class AgencyController extends Controller
 
         foreach ($agencies as $agency) {
             if ($agency->is_active === 1) {
-                $agency->status = "<div class='text-success text-center'><i class='fas fa-circle'></i></div>";
+                $agency->status = "<div class='badge badge-success text-center'>Active</div>";
             } else if ($agency->is_active === 0) {
-                $agency->status = "<div class='text-danger text-center'><i class='fas fa-circle'></i></div>";
+                $agency->status = "<div class='badge badge-danger text-center'>Inactive</div>";
             } else {
-                $agency->status = "<div class='text-primary text-center'><i class='fas fa-question'></i></div>";
+                $agency->status = "<div class='badge badge-primary text-center'>Undefined</div>";
             }
 
             if($agency->kbp_accredited === 1) {
-                $agency->kbp_status = "<span class='badge badge-success'>Accredited</span>";
+                $agency->kbp_status = "<span class='badge badge-success text-center'>Accredited</span>";
             } else if($agency->kbp_accredited === 0) {
-                $agency->kbp_status = "<span class='badge badge-warning'>Non-Accredited</span>";
+                $agency->kbp_status = "<span class='badge badge-warning text-center'>Non-Accredited</span>";
             } else {
-                $agency->kbp_status = "<span class='badge badge-danger'>Undefined</span>";
+                $agency->kbp_status = "<span class='badge badge-danger text-center'>Undefined</span>";
             }
 
             if($agency->address === null || $agency->address === '' || $agency->address === "") {
-                $agency->address = "<div class='text-danger'>Undefined</div>";
+                $agency->address = "<div class='badge badge-danger text-center'>Undefined</div>";
             }
 
             if($agency->contact_number === null || $agency->contact_number === '' || $agency->contact_number === "") {
-                $agency->contact_number = "<div class='text-danger'>Undefined</div>";
+                $agency->contact_number = "<div class='badge badge-danger text-center'>Undefined</div>";
             }
 
             $agency->options = "" .

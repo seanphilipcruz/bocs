@@ -16,9 +16,9 @@
                         <th>Id</th>
                         <th>Last</th>
                         <th>First</th>
-                        <th>Middle</th>
                         <th>Username</th>
                         <th>Job</th>
+                        <th>Status</th>
                         <th>Options</th>
                     </tr>
                     </thead>
@@ -285,13 +285,13 @@
             { data: 'id' },
             { data: 'last_name' },
             { data: 'first_name' },
-            { data: 'middle_name' },
             { data: 'username' },
             { data: 'job.job_description' },
+            { data: 'status' },
             { data: 'options' }
         ],
         order: [
-            [ 0, 'asc' ]
+            [ 5, 'asc' ]
         ]
     });
 

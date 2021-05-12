@@ -16,9 +16,9 @@ class AdvertiserController extends Controller
 
         foreach ($advertisers as $advertiser) {
             if ($advertiser->is_active === 1) {
-                $advertiser->status = "<div class='text-success text-center'><i class='fas fa-circle'></i></div>";
+                $advertiser->status = "<div class='badge badge-success text-center'>Active</div>";
             } else if ($advertiser->is_active === 0) {
-                $advertiser->status = "<div class='text-danger text-center'><i class='fas fa-circle'></i></div>";
+                $advertiser->status = "<div class='badge badge-danger text-center'>Inactive</div>";
             }
 
             $advertiser->options = "" .

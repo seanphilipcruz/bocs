@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\EmployeeLogs;
 use App\Job;
 use Auth;
 use http\Client\Curl\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -15,9 +17,9 @@ class JobsController extends Controller
 
         foreach ($jobs as $job) {
             if ($job->is_active === 1) {
-                $job->status = "<div class='text-success text-center'><i class='fas fa-circle'></i></div>";
+                $job->status = "<div class='badge badge-success text-center'>Active</div>";
             } else if ($job->is_active === 0) {
-                $job->status = "<div class='text-danger text-center'><i class='fas fa-circle'></i></div>";
+                $job->status = "<div class='badge badge-danger text-center'>Inactive</div>";
             }
 
             $job->options = "" .
@@ -55,6 +57,21 @@ class JobsController extends Controller
 
             $job->fill($request->all());
 
+            $job->save();
+
+            $employee = auth()->user();
+
+            $new_job = Job::latest()->get()->first();
+
+            $logs = new EmployeeLogs([
+                'action' => 'Created a new job description named ' . $new_job->job_description,
+                'employee_id' => $employee->id,
+                'user_id' => $employee->id,
+                'job_id' => $employee->Job->id
+            ]);
+
+            $logs->save();
+
             return response()->json(['status' => 'success', 'message' => 'A new job description has been created!']);
         }
 
@@ -69,8 +86,21 @@ class JobsController extends Controller
             'level' => 'required'
         ]);
 
+        $employee = auth()->user();
+
         if($validator->passes()) {
             $job->update($request->all());
+
+            $logs = new EmployeeLogs([
+                'action' => 'Updated a job description named ' . $job->job_description,
+                'employee_id' => $employee->id,
+                'user_id' => $employee->id,
+                'job_id' => $employee->Job->id
+            ]);
+
+            $logs->save();
+
+            return response()->json(['status' => 'success', 'message' => $job->job_description . ' has been updated!']);
         }
 
         return response()->json(['status' => 'error', 'message' => $validator->errors()->all()]);

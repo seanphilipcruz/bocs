@@ -18,9 +18,9 @@ class EmployeeController extends Controller
 
         foreach ($employees as $employee) {
             if ($employee->is_active === 1) {
-                $employee->status = "<div class='text-success text-center'><i class='fas fa-circle'></i></div>";
+                $employee->status = "<div class='badge badge-success text-center'>Active</div>";
             } else if ($employee->is_active === 0) {
-                $employee->status = "<div class='text-danger text-center'><i class='fas fa-circle'></i></div>";
+                $employee->status = "<div class='badge badge-danger text-center'>Inactive</div>";
             }
 
             $employee->options = "" .

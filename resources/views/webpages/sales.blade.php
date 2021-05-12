@@ -182,8 +182,8 @@
             { data: 'contract.contract_number' },
             { data: 'bo_number' },
             { data: 'station' },
-            { data: 'contract.agency.agency_name' },
-            { data: 'contract.advertiser.advertiser_name' },
+            { data: 'contract.agency_name' },
+            { data: 'contract.advertiser_name' },
             { data: 'executive' },
             { data: 'options' }
         ],

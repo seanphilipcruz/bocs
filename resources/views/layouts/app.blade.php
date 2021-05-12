@@ -51,54 +51,101 @@
                                 </li>
                             @endif--}}
                         @else
-                            <li class="nav-item dropdown">
-                                <a id="advertisersDropdown" href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>{{ __('Advertiser') }}</a>
+                            @if(auth()->user()->Job->level === "1")
+                                <li class="nav-item">
+                                    <a href="{{ route('advertisers') }}" id="advertisers" class="nav-link" navigation>{{ __('Advertisers') }}</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('agencies') }}" id="agencies" class="nav-link" navigation>{{ __('Agencies') }}</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('contracts') }}" id="contracts" class="nav-link" navigation>{{ __('Contracts') }}</a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a id="salesDropdown" href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>{{ __('Sales') }}</a>
 
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="advertisersDropdown">
-                                    <a href="{{ route('advertisers') }}" id="advertisers" class="dropdown-item" navigation>{{ __('Advertisers') }}</a>
-                                    <a href="{{ route('logs') }}" class="dropdown-item" id="advertiser_logs" navigation>{{ __('Logs') }}</a>
-                                </div>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a id="agencyDropdown" href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>{{ __('Agency') }}</a>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="salesDropdown">
+                                        <a href="{{ route('sales') }}" id="sales" class="dropdown-item" navigation>{{ __('Sales') }}</a>
+                                        <a href="{{ route('sales.reports') }}" id="sales_report" class="dropdown-item" navigation>{{ __('Reports') }}</a>
+                                    </div>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('archives') }}" id="archives" class="nav-link" navigation>{{ __('Archives') }}</a>
+                                </li>
+                            @elseif(auth()->user()->Job->level === "2")
+                                <li class="nav-item">
+                                    <a href="{{ route('contracts') }}" id="contracts" class="nav-link" navigation>{{ __('Contracts') }}</a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a id="salesDropdown" href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>{{ __('Sales') }}</a>
 
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="agencyDropdown">
-                                    <a href="{{ route('agencies') }}" id="agencies" class="dropdown-item" navigation>{{ __('Agencies') }}</a>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="salesDropdown">
+                                        <a href="{{ route('sales') }}" id="sales" class="dropdown-item" navigation>{{ __('Sales') }}</a>
+                                        <a href="{{ route('sales.reports') }}" id="sales_report" class="dropdown-item" navigation>{{ __('Reports') }}</a>
+                                    </div>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('archives') }}" id="archives" class="nav-link" navigation>{{ __('Archives') }}</a>
+                                </li>
+                            @elseif(auth()->user()->Job->level === "3")
+                                <li class="nav-item">
+                                    <a href="{{ route('contracts') }}" id="contracts" class="nav-link" navigation>{{ __('Contracts') }}</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('sales') }}" id="sales" class="nav-link" navigation>{{ __('Sales') }}</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('archives') }}" id="archives" class="nav-link" navigation>{{ __('Archives') }}</a>
+                                </li>
+                            @else
+                                <li class="nav-item dropdown">
+                                    <a id="advertisersDropdown" href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>{{ __('Advertiser') }}</a>
 
-                                    <a href="{{ route('logs') }}" class="dropdown-item" id="agency_logs" navigation>{{ __('Logs') }}</a>
-                                </div>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a id="contractsDropdown" href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>{{ __('Contracts') }}</a>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="advertisersDropdown">
+                                        <a href="{{ route('advertisers') }}" id="advertisers" class="dropdown-item" navigation>{{ __('Advertisers') }}</a>
+                                        <a href="{{ route('logs') }}" class="dropdown-item" id="advertiser_logs" navigation>{{ __('Logs') }}</a>
+                                    </div>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a id="agencyDropdown" href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>{{ __('Agency') }}</a>
 
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="contractsDropdown">
-                                    <a href="{{ route('contracts') }}" id="contracts" class="dropdown-item" navigation>{{ __('Contracts') }}</a>
-                                    <a href="{{ route('logs') }}" class="dropdown-item" id="contract_logs" navigation>{{ __('Logs') }}</a>
-                                </div>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a id="salesDropdown" href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>{{ __('Sales') }}</a>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="agencyDropdown">
+                                        <a href="{{ route('agencies') }}" id="agencies" class="dropdown-item" navigation>{{ __('Agencies') }}</a>
+                                        <a href="{{ route('logs') }}" class="dropdown-item" id="agency_logs" navigation>{{ __('Logs') }}</a>
+                                    </div>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a id="contractsDropdown" href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>{{ __('Contracts') }}</a>
 
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="salesDropdown">
-                                    <a href="{{ route('sales') }}" id="sales" class="dropdown-item" navigation>{{ __('Sales') }}</a>
-                                    <a href="{{ route('sales.reports') }}" id="sales_report" class="dropdown-item" navigation>{{ __('Reports') }}</a>
-                                    <a href="{{ route('logs') }}" class="dropdown-item" id="sales_logs" navigation>{{ __('Logs') }}</a>
-                                </div>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('jobs') }}" id="jobs" class="nav-link" navigation>{{ __('Jobs') }}</a>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a id="employeesDropdown" href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>{{ __('Employees') }}</a>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="contractsDropdown">
+                                        <a href="{{ route('contracts') }}" id="contracts" class="dropdown-item" navigation>{{ __('Contracts') }}</a>
+                                        <a href="{{ route('logs') }}" class="dropdown-item" id="contract_logs" navigation>{{ __('Logs') }}</a>
+                                    </div>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a id="salesDropdown" href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>{{ __('Sales') }}</a>
 
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="employeesDropdown">
-                                    <a href="{{ route('employees') }}" class="dropdown-item" id="employees" navigation>{{ __('Accounts') }}</a>
-                                    <a href="{{ route('logs') }}" class="dropdown-item" id="employees_logs" navigation>{{ __('Logs') }}</a>
-                                </div>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('archives') }}" id="archives" class="nav-link" navigation>{{ __('Archives') }}</a>
-                            </li>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="salesDropdown">
+                                        <a href="{{ route('sales') }}" id="sales" class="dropdown-item" navigation>{{ __('Sales') }}</a>
+                                        <a href="{{ route('sales.reports') }}" id="sales_report" class="dropdown-item" navigation>{{ __('Reports') }}</a>
+                                        <a href="{{ route('logs') }}" class="dropdown-item" id="sales_logs" navigation>{{ __('Logs') }}</a>
+                                    </div>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('jobs') }}" id="jobs" class="nav-link" navigation>{{ __('Jobs') }}</a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a id="employeesDropdown" href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>{{ __('Employees') }}</a>
+
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="employeesDropdown">
+                                        <a href="{{ route('employees') }}" class="dropdown-item" id="employees" navigation>{{ __('Accounts') }}</a>
+                                        <a href="{{ route('logs') }}" class="dropdown-item" id="employees_logs" navigation>{{ __('Logs') }}</a>
+                                    </div>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('archives') }}" id="archives" class="nav-link" navigation>{{ __('Archives') }}</a>
+                                </li>
+                            @endif
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>{{ Auth::user()->first_name }}<span class="caret"></span></a>
 
@@ -131,7 +178,7 @@
         <!-- Modal -->
         <div class="modal fade" id="help-modal" tabindex="-1" role="dialog" aria-labelledby="help-modal"
              aria-hidden="true">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Help with Buttons</h5>
@@ -155,7 +202,7 @@
                             </tr>
                             <tr>
                                 <td><button type="button" class="btn btn-outline-dark"><i class="fas fa-plus"></i></button></td>
-                                <td>Add</td>
+                                <td>Add a Sales Breakdown, Contract, Agency, Advertiser, Job or an Employee</td>
                             </tr>
                             <tr>
                                 <td><button type="button" class="btn btn-outline-dark"><i class="fas fa-download"></i></button></td>
@@ -203,83 +250,119 @@
                 <div class="modal-dialog modal-xl" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Things you can do in BOCS</h5>
+                            <h5 class="modal-title">{{ auth()->user()->Job->job_description }}</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
-                            @if(auth()->user()->Job->level === 1)
+                            @if(auth()->user()->Job->level === "1")
                                 <ul class="nav nav-pills nav-fill">
                                     <li class="nav-item">
-                                        <a class="nav-link active" href="#">View Contracts</a>
+                                        <a class="nav-link active" href="#view_contracts" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="view_contracts">View Contracts</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">Manage Sales Breakdown</a>
+                                        <a class="nav-link" href="#edit_sales_breakdown" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="edit_sales_breakdown">Edit Sales Breakdown</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">Manage Employees</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">Compare Sales/Contracts</a>
+                                        <a class="nav-link" href="#compare_sales_container" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="compare_sales_container">Compare Sales/Contracts</a>
                                     </li>
                                 </ul>
-                                <div class="jobs_container">
-
+                                <div class="m-3">
+                                    <div id="view_contracts" class="collapse show">
+                                        <div class="card card-body text-center">
+                                            <h5>You can <button type="button" class="btn btn-outline-dark"><i class="fas fa-edit"></i>  View</button> Contracts</h5>
+                                        </div>
+                                    </div>
+                                    <div id="edit_sales_breakdown" class="collapse">
+                                        <div class="card card-body text-center">
+                                            <h5>You can <button type="button" class="btn btn-outline-dark"><i class="fas fa-edit"></i>  View / Update</button> Sales Breakdowns</h5>
+                                        </div>
+                                    </div>
+                                    <div id="compare_sales_container" class="collapse">
+                                        <div class="card card-body text-center">
+                                            <h5>You can <button type="button" class="btn btn-outline-dark"><i class="fas fa-exchange-alt"></i>  Compare</button> Sales and Contracts from the old and the new version. <br> To start, click the <b>Archives</b> from the Navigation Bar</h5>
+                                        </div>
+                                    </div>
                                 </div>
-                            @elseif(auth()->user()->Job->level === 2)
+                            @elseif(auth()->user()->Job->level === "2")
                                 <ul class="nav nav-pills nav-fill">
                                     <li class="nav-item">
-                                        <a class="nav-link active" href="#">View Contracts</a>
+                                        <a class="nav-link active" href="#view_contracts" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="view_contracts">View Contracts</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">Manage Sales Breakdown</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">Manage Employees</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">Compare Sales/Contracts</a>
+                                        <a class="nav-link" href="#edit_sales_breakdown" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="edit_sales_breakdown">Add Sales Breakdown</a>
                                     </li>
                                 </ul>
-                                <div class="jobs_container">
-
+                                <div class="m-3">
+                                    <div id="view_contracts" class="collapse show">
+                                        <div class="card card-body text-center">
+                                            <h5>You can <button type="button" class="btn btn-outline-dark"><i class="fas fa-edit"></i>  View</button> Contracts and Sales Breakdowns</h5>
+                                        </div>
+                                    </div>
+                                    <div id="edit_sales_breakdown" class="collapse">
+                                        <div class="card card-body text-center">
+                                            <h5>You can <button type="button" class="btn btn-outline-dark"><i class="fas fa-edit"></i>  Add </button> Sales Breakdowns</h5>
+                                        </div>
+                                    </div>
                                 </div>
-                            @elseif(auth()->user()->Job->level === 3)
+                            @elseif(auth()->user()->Job->level === "3")
                                 <ul class="nav nav-pills nav-fill">
                                     <li class="nav-item">
-                                        <a class="nav-link active" href="#">View Contracts</a>
+                                        <a class="nav-link active" href="#view_contracts" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="view_contracts">View Contracts</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">Manage Sales Breakdown</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">Manage Employees</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">Compare Sales/Contracts</a>
+                                        <a class="nav-link" href="#edit_sales_breakdown" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="edit_sales_breakdown">View Sales Breakdown</a>
                                     </li>
                                 </ul>
-                                <div class="jobs_container">
-
+                                <div class="m-3">
+                                    <div id="view_contracts" class="collapse show">
+                                        <div class="card card-body text-center">
+                                            <h5>You can <button type="button" class="btn btn-outline-dark"><i class="fas fa-edit"></i>  View</button> Contracts</h5>
+                                        </div>
+                                    </div>
+                                    <div id="edit_sales_breakdown" class="collapse">
+                                        <div class="card card-body text-center">
+                                            <h5>You can <button type="button" class="btn btn-outline-dark"><i class="fas fa-edit"></i>  View </button> Sales Breakdowns</h5>
+                                        </div>
+                                    </div>
                                 </div>
                             @else
                                 <ul class="nav nav-pills nav-fill">
                                     <li class="nav-item">
-                                        <a class="nav-link active" href="#">View Contracts</a>
+                                        <a class="nav-link active" href="#manage_contracts" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="manage_contracts">Manage Contracts</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">Manage Sales Breakdown</a>
+                                        <a class="nav-link" href="#manage_sales_container" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="manage_sales_container">Manage Sales Breakdown</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">Manage Employees</a>
+                                        <a class="nav-link" href="#manage_employees_container" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="manage_employees_container">Manage Employees</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">Compare Sales/Contracts</a>
+                                        <a class="nav-link" href="#compare_sales_container" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="compare_sales_container">Compare Sales/Contracts</a>
                                     </li>
                                 </ul>
-                                <div class="jobs_container">
-
+                                <div class="m-3">
+                                    <div id="manage_contracts" class="collapse show">
+                                        <div class="card card-body text-center">
+                                            <h5>You can <button type="button" class="btn btn-outline-dark"><i class="fas fa-plus"></i>  Add</button> <button type="button" class="btn btn-outline-dark"><i class="fas fa-edit"></i>  Edit/View</button> and <button type="button" class="btn btn-outline-dark"><i class="fas fa-trash-alt"></i>  Delete</button> a Contract. <br> To start, click the <b>Contracts</b> from the Navigation Bar <i class="fas fa-arrow-right"></i>  <button type="button" class="btn btn-outline-dark"><i class="fas fa-plus"></i>  New Contract</button></h5>
+                                        </div>
+                                    </div>
+                                    <div id="manage_sales_container" class="collapse">
+                                        <div class="card card-body text-center">
+                                            <h5>You can <button type="button" class="btn btn-outline-dark"><i class="fas fa-plus"></i>  Add</button> <button type="button" class="btn btn-outline-dark"><i class="fas fa-edit"></i>  Edit/View</button> and <button type="button" class="btn btn-outline-dark"><i class="fas fa-trash-alt"></i>  Delete</button> Sales Breakdowns. <br> To start, select a <b>Specific Contract</b>  <i class="fas fa-arrow-right"></i>  <button type="button" class="btn btn-outline-dark"><i class="fas fa-plus"></i></button></h5>
+                                        </div>
+                                    </div>
+                                    <div id="manage_employees_container" class="collapse">
+                                        <div class="card card-body text-center">
+                                            <h5>You can <button type="button" class="btn btn-outline-dark"><i class="fas fa-plus"></i>  Add</button> <button type="button" class="btn btn-outline-dark"><i class="fas fa-edit"></i>  Edit/View</button> <button type="button" class="btn btn-outline-dark"><i class="fas fa-trash-alt"></i>  Delete</button> and <button type="button" class="btn btn-outline-dark"><i class="fas fa-lock"></i>  Change Password</button> an Employee's Account. <br> To start, click the <b>Employees</b> from the Navigation Bar</h5>
+                                        </div>
+                                    </div>
+                                    <div id="compare_sales_container" class="collapse">
+                                        <div class="card card-body text-center">
+                                            <h5>You can <button type="button" class="btn btn-outline-dark"><i class="fas fa-exchange-alt"></i>  Compare</button> Sales and Contracts from the old and the new version. <br> To start, click the <b>Archives</b> from the Navigation Bar</h5>
+                                        </div>
+                                    </div>
                                 </div>
                             @endif
                         </div>

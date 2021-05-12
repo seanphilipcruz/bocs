@@ -197,7 +197,7 @@
 
             function onSuccess(result) {
                 console.log(result);
-                if(result.employee) { nm
+                if(result.employee) {
                     // employee
                     // setting the input fields empty
                     $('#update_first_name, #update_middle_name, #update_last_name, #nickname, #username, #employee_id, #delete-employee-form-body').empty();
@@ -844,5 +844,12 @@
     $(document).on('click', '.nav-pills > .nav-item > a.nav-link', function() {
         $('.nav-pills > .nav-item > a.nav-link.active').removeClass('active');
         $(this).addClass('active');
+    });
+
+    $(document).on('click', 'a[data-toggle="collapse"]', function() {
+        let button = $(this).attr('href');
+
+        $('.collapse.show').collapse('hide');
+        $('a'+button+'').addClass('show');
     });
 </script>
