@@ -14,7 +14,7 @@ class LogsController extends Controller
         $logs = EmployeeLogs::with('User', 'Employee', 'Job')->get();
 
         foreach ($logs as $employee) {
-            $employee->name = $employee->Employee->first_name . ' ' . $employee->Employee->last_name;
+            $employee->name = $employee->User->first_name . ' ' . $employee->User->last_name;
         }
 
         if($request->ajax()) {
