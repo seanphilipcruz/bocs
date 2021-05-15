@@ -205,7 +205,7 @@
         }
 
         function onSuccess(result) {
-            $('#add-agency-form, #update-agency-form').trigger('reset');
+            $('#agency_name, #contact_number, #address').val('');
             agenciesTable.ajax.reload(null, false);
             $('.modal').modal('hide');
 

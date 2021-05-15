@@ -167,7 +167,7 @@
         }
 
         function onSuccess(result) {
-            $('#add-advertiser-form ,#update-advertiser-form').trigger('reset');
+            $('#advertiser_name').val('');
             advertisersTable.ajax.reload(null, false);
             $('.modal').modal('hide');
 

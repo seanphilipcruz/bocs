@@ -242,9 +242,9 @@
         }
 
         function onSuccess(result) {
+            $('#job_description').val('');
             jobsTable.ajax.reload(null, false);
             $('.modal').modal('hide');
-            $('#job_description').val("");
 
             Toast.fire({
                 icon: "success",

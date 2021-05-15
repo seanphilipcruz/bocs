@@ -238,6 +238,7 @@
         }
 
         function onSuccess(result) {
+            $('#sale_amount, #sale_gross_amount').val('');
             contractsTable.ajax.reload(null, false);
             $('.modal').modal('hide');
 
