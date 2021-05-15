@@ -243,10 +243,12 @@
 
         function onSuccess(result) {
             jobsTable.ajax.reload(null, false);
+            $('.modal').modal('hide');
+            $('#job_description').val("");
 
             Toast.fire({
-                icon: result.status,
-                title: result.message,
+                icon: "success",
+                title: "Job has been updated",
             });
         }
     });

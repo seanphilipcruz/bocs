@@ -53,7 +53,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="add-employee-form" data-form="Employee" data-request="add"  action="{{ route('employees.store') }}" method="POST">
+            <form id="new-employee-form" data-form="Employee" data-request="add"  action="{{ route('employees.store') }}" method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="row">
@@ -98,13 +98,6 @@
                         <div class="col">
                             <label for="username">Username</label>
                             <input type="email" id="username" name="username" class="form-control" placeholder="Username">
-                        </div>
-                    </div>
-                    <div class="my-3"></div>
-                    <div class="row">
-                        <div class="col">
-                            <label for="user_password">Password</label>
-                            <input type="password" id="user_password" name="user_password" class="form-control" placeholder="Password">
                         </div>
                     </div>
                 </div>

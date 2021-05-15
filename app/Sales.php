@@ -9,6 +9,7 @@ class Sales extends Model
     protected $fillable = [
         'contract_id',
         'bo_number',
+        'bo_type',
         'station',
         'month',
         'year',

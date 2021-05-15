@@ -49,6 +49,16 @@ class AgencyController extends Controller
         }
 
         if($request->ajax()) {
+            if($request->has('search')) {
+                $search_query = Agency::where('agency_name', '=', $request['value']);
+
+                if($search_query->count() == 1) {
+                    return $search_query->get()->first();
+                } else {
+                    return response()->json(['status' => 'non-existing']);
+                }
+            }
+
             if($request->has('navigation')) {
                 return view('webpages.agencies');
             }

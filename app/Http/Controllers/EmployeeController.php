@@ -56,7 +56,6 @@ class EmployeeController extends Controller
             'first_name' => 'required',
             'date_of_birth' => 'required',
             'username' => 'required',
-            'password' => 'required',
             'job_id' => 'required'
         ]);
 
@@ -65,7 +64,9 @@ class EmployeeController extends Controller
                 $request['nickname'] = $request['first_name'];
             }
 
-            $request['password'] = Hash::make($request['user_password']);
+            $request['is_active'] = 1;
+
+            $request['password'] = Hash::make(date('mdy', strtotime($request['date_of_birth'])));
 
             Employee::create($request->all());
 

@@ -11,12 +11,18 @@ class SalesRevision extends Model
     protected $fillable = [
         'sales_id',
         'contract_id',
+        'bo_number',
+        'bo_type',
+        'station',
         'month',
         'year',
         'type',
         'amount_type',
         'amount',
         'gross_amount',
+        'agency_id',
+        'advertiser_id',
+        'ae',
         'invoice_no',
         'version'
     ];

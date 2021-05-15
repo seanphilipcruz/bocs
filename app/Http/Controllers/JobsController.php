@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ContractRevision;
 use App\EmployeeLogs;
 use App\Job;
 use Auth;
@@ -24,8 +25,8 @@ class JobsController extends Controller
 
             $job->options = "" .
                 "<div class='btn-group'>" .
-                "   <a href='#update-job-modal' data-action='open' data-link='".route('jobs.show')."' data-id='".$job->id."' tooltip title='Update Advertiser' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
-                "   <a href='#delete-job-modal' data-action='open' data-link='".route('jobs.show')."' data-id='".$job->id."' tooltip title='Remove Advertiser' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-trash'></i></a>" .
+                "   <a href='#update-job-modal' data-action='open' data-link='".route('jobs.show')."' data-id='".$job->id."' tooltip title='Update Job' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                "   <a href='#delete-job-modal' data-action='open' data-link='".route('jobs.show')."' data-id='".$job->id."' tooltip title='Remove Job' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-trash'></i></a>" .
                 "</div>";
         }
 

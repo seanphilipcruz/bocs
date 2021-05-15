@@ -1,7 +1,15 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <a href="{{ route('contracts') }}" id="contracts" navigation class="btn btn-outline-dark"><i class="fas fa-arrow-left"></i>  Back</a>
+            <div class="fa-pull-left">
+                <a href="{{ route('contracts') }}" id="contracts" navigation class="btn btn-outline-dark"><i class="fas fa-arrow-left"></i>  Back</a>
+            </div>
+            <div class="fa-pull-right">
+                <div class="btn-group">
+                    <a href="#new-agency-modal" data-toggle="modal" class="btn btn-outline-dark"><i class="fas fa-user"></i>   New Agency</a>
+                    <a href="#new-advertiser-modal" data-toggle="modal" class="btn btn-outline-dark"><i class="fas fa-building"></i>   New Advertiser</a>
+                </div>
+            </div>
         </div>
     </div>
     <div class="my-3"></div>
@@ -92,6 +100,16 @@
                             </select>
                         </div>
                     </div>
+                    <div id="select_parent_bo" class="col" hidden>
+                        <div class="form-group">
+                            <label for="parent_bo">Parent BO</label>
+                            <select class="custom-select" id="parent_bo" name="parent_bo">
+                                @foreach($parents as $key => $bo_number)
+                                    <option value="{{ $bo_number }}">{{ $bo_number }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                     <div class="col">
                         <div class="form-group">
                             <label for="bo_number">BO Number</label>
@@ -138,65 +156,65 @@
                             <div class="col-2">
                                 <div class="form-group">
                                     <select id="template" class="custom-select">
-                                        <option value>--</option>
-                                        <option>One(1) </option>
-                                        <option>Two(2) </option>
-                                        <option>Three(3) </option>
-                                        <option>Four(4) </option>
-                                        <option>Five(5) </option>
-                                        <option>Six(6) </option>
-                                        <option>Seven(7) </option>
-                                        <option>Eight(8) </option>
-                                        <option>Nine(9) </option>
-                                        <option>Ten(10) </option>
-                                        <option>Bonus one(1) </option>
-                                        <option>Bonus two(2) </option>
-                                        <option>Bonus three(3) </option>
-                                        <option>Bonus four(4) </option>
-                                        <option>Bonus five(5) </option>
-                                        <option>Bonus six(6) </option>
-                                        <option>Bonus seven(7) </option>
-                                        <option>Bonus eight(8) </option>
-                                        <option>Bonus nine(9) </option>
-                                        <option>Bonus ten(10) </option>
+                                        <option value></option>
+                                        <option>One(1)</option>
+                                        <option>Two(2)</option>
+                                        <option>Three(3)</option>
+                                        <option>Four(4)</option>
+                                        <option>Five(5)</option>
+                                        <option>Six(6)</option>
+                                        <option>Seven(7)</option>
+                                        <option>Eight(8)</option>
+                                        <option>Nine(9)</option>
+                                        <option>Ten(10)</option>
+                                        <option>Bonus one(1)</option>
+                                        <option>Bonus two(2)</option>
+                                        <option>Bonus three(3)</option>
+                                        <option>Bonus four(4)</option>
+                                        <option>Bonus five(5)</option>
+                                        <option>Bonus six(6)</option>
+                                        <option>Bonus seven(7)</option>
+                                        <option>Bonus eight(8)</option>
+                                        <option>Bonus nine(9)</option>
+                                        <option>Bonus ten(10)</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-2">
                                 <div class="form-group">
                                     <select id="template1" class="custom-select">
-                                        <option value>--</option>
-                                        <option>15's spots/day, </option>
-                                        <option>30's spots/day, </option>
-                                        <option>AOB's spots/day, </option>
-                                        <option>15's/day, </option>
-                                        <option>30's/day, </option>
-                                        <option>45's/day, </option>
-                                        <option>60's/day, </option>
-                                        <option>AOB's/day </option>
-                                        <option>Event Sponsorship </option>
-                                        <option>Major Event Sponsorship </option>
-                                        <option>Minor Event Sponsorship </option>
-                                        <option>Movie Premiere Sponsorship </option>
-                                        <option>News Sponsorship/day, </option>
-                                        <option>Product Song Branded </option>
-                                        <option>Product Song Unbranded </option>
-                                        <option>Program Sponsorship </option>
-                                        <option>Promo/day, </option>
-                                        <option>Remote Feeds/Live Feeds, </option>
-                                        <option>Song Sponsorships/day, </option>
-                                        <option>Scripted Timechecks/day, </option>
+                                        <option value></option>
+                                        <option>15's spots/day,</option>
+                                        <option>30's spots/day,</option>
+                                        <option>AOB's spots/day,</option>
+                                        <option>15's/day,</option>
+                                        <option>30's/day,</option>
+                                        <option>45's/day,</option>
+                                        <option>60's/day,</option>
+                                        <option>AOB's/day</option>
+                                        <option>Event Sponsorship</option>
+                                        <option>Major Event Sponsorship</option>
+                                        <option>Minor Event Sponsorship</option>
+                                        <option>Movie Premiere Sponsorship</option>
+                                        <option>News Sponsorship/day,</option>
+                                        <option>Product Song Branded</option>
+                                        <option>Product Song Unbranded</option>
+                                        <option>Program Sponsorship</option>
+                                        <option>Promo/day,</option>
+                                        <option>Remote Feeds/Live Feeds,</option>
+                                        <option>Song Sponsorships/day,</option>
+                                        <option>Scripted Timechecks/day,</option>
                                         <option>Timechecks </option>
-                                        <option>Spiel/day, </option>
-                                        <option>Talkies/day, </option>
-                                        <option>Tips/day, </option>
+                                        <option>Spiel/day,</option>
+                                        <option>Talkies/day,</option>
+                                        <option>Tips/day,</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-1">
                                 <div class="form-group">
                                     <select id="template2" class="custom-select">
-                                        <option value>--</option>
+                                        <option value></option>
                                         <option>Monday </option>
                                         <option>Tuesday </option>
                                         <option>Wednesday </option>
@@ -217,7 +235,7 @@
                             <div class="col-1">
                                 <div class="form-group">
                                     <select id="template3" class="custom-select">
-                                        <option value>--</option>
+                                        <option value></option>
                                         <option>and </option>
                                         <option>to </option>
                                     </select>
@@ -226,7 +244,7 @@
                             <div class="col-1">
                                 <div class="form-group">
                                     <select id="template4" class="custom-select">
-                                        <option value>--</option>
+                                        <option value></option>
                                         <option>Monday </option>
                                         <option>Tuesday </option>
                                         <option>Wednesday </option>
@@ -240,7 +258,7 @@
                             <div class="col-2">
                                 <div class="form-group">
                                     <select id="template5" class="custom-select">
-                                        <option value>--</option>
+                                        <option value></option>
                                         <option>for </option>
                                         <option>with OBB </option>
                                         <option>with CBB </option>
@@ -252,9 +270,9 @@
                             <div class="col-1">
                                 <div class="form-group">
                                     <select id="template6" class="custom-select">
-                                        <option value>--</option>
+                                        <option value></option>
                                         @for($template = 0; $template <= 100; $template++)
-                                            <option value="{{ $template }} ">{{ $template }} </option>
+                                            <option>{{ $template }}</option>
                                         @endfor
                                     </select>
                                 </div>
@@ -262,7 +280,7 @@
                             <div class="col-2">
                                 <div class="form-group">
                                     <select id="template7" class="custom-select">
-                                        <option value>--</option>
+                                        <option value></option>
                                         <option>day/s</option>
                                         <option>week/s</option>
                                         <option>month/s</option>
@@ -429,14 +447,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row justify-content-center text-center">
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="total_amount">Total Package Cost</label>
-                                    <input type="number" id="total_amount" name="total_amount" class="form-control" value="0.00" readonly>
-                                </div>
-                            </div>
-                        </div>
                         <div class="my-2"></div>
                         <div class="row justify-content-center text-center">
                             <div class="col-4">
@@ -515,4 +525,103 @@
             </div>
         </div>
     </form>
+
+    <!-- Modal -->
+    <div class="modal fade" id="new-agency-modal" tabindex="-1" role="dialog" aria-labelledby="new-agency-modal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Agency</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="add-agency-form" data-form="Agency" data-request="add" action="{{ route('agencies.store') }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="agency_name">Agency Name</label>
+                            <input type="text" id="agency_name" name="agency_name" class="form-control" placeholder="Agency Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact_number">Contact Number</label>
+                            <input type="text" id="contact_number" name="contact_number" class="form-control" placeholder="Contact Number">
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <input type="text" id="address" name="address" class="form-control" placeholder="Address">
+                        </div>
+                        <div class="form-group">
+                            <label for="kbp_accredited">KBP Status</label>
+                            <select id="kbp_accredited" name="kbp_accredited" class="custom-select">
+                                <option value="">--</option>
+                                <option value="1">Accredited</option>
+                                <option value="0">Non-Accredited</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-outline-dark"><i class="fas fa-save"></i></button>
+                            <button type="button" class="btn btn-outline-dark" data-dismiss="modal"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="new-advertiser-modal" tabindex="-1" role="dialog" aria-labelledby="new-advertiser-modal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Advertiser</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="add-advertiser-form" data-form="Advertiser" data-request="add"  action="{{ route('advertisers.store') }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="advertiser_name">Advertiser Name</label>
+                            <input type="text" id="advertiser_name" name="advertiser_name" class="form-control" placeholder="Advertiser Name">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-outline-dark"><i class="fas fa-save"></i></button>
+                            <button type="button" class="btn btn-outline-dark" data-dismiss="modal"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    $(document).on('submit', '#add-agency-form, #add-advertiser-form', function(event) {
+        event.preventDefault();
+        let url = $(this).attr('action');
+        let formData = new FormData(this);
+
+        postAsync(url, formData, 'JSON', beforeSend, onSuccess);
+
+        function beforeSend() {
+            manualToast.fire({
+                icon: 'info',
+                title: 'Please wait ...'
+            });
+        }
+
+        function onSuccess(result) {
+            $('.modal').modal('hide');
+
+            Toast.fire({
+                icon: result.status,
+                title: result.message,
+            });
+        }
+    });
+</script>

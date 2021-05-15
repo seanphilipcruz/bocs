@@ -22,16 +22,16 @@ class CreateContractArchiveTable extends Migration
             $table->unsignedBigInteger('advertiser_id');
             $table->string('product');
             $table->string('bo_type');
-            $table->string('parent_bo');
+            $table->string('parent_bo')->nullable()->default('none');
             $table->string('bo_number');
-            $table->string('ce_number');
+            $table->string('ce_number')->nullable();
             $table->date('bo_date');
             $table->date('commencement');
             $table->date('end_of_broadcast');
             $table->string('detail', 1000);
-            $table->string('package_cost');
-            $table->string('package_cost_vat');
-            $table->integer('package_cost_salesdc');
+            $table->string('package_cost')->nullable('Package Cost')->default('Package Cost');
+            $table->string('package_cost_vat')->nullable('none')->default('none');
+            $table->integer('package_cost_salesdc')->nullable(0)->default(0);
             $table->decimal('manila_cash', 50, 2);
             $table->decimal('cebu_cash', 50, 2);
             $table->decimal('davao_cash', 50, 2);
@@ -41,16 +41,16 @@ class CreateContractArchiveTable extends Migration
             $table->decimal('davao_ex', 50, 2);
             $table->decimal('total_ex', 50, 2);
             $table->decimal('total_amount', 50, 2);
-            $table->string('prod_cost');
-            $table->string('prod_cost_vat');
-            $table->string('prod_cost_salesdc');
+            $table->string('prod_cost')->nullable('Production Cost')->default('Production Cost');
+            $table->string('prod_cost_vat')->nullable('none')->default('none');
+            $table->string('prod_cost_salesdc')->nullable(0)->default(0);
             $table->decimal('manila_prod', 50, 2);
             $table->decimal('cebu_prod', 50, 2);
             $table->decimal('davao_prod', 50, 2);
             $table->decimal('total_prod', 50, 2);
             $table->unsignedBigInteger('ae');
-            $table->tinyInteger('is_printed')->nullable(0);
-            $table->tinyInteger('is_active')->nullable(1);
+            $table->tinyInteger('is_printed')->nullable(0)->default(0);
+            $table->tinyInteger('is_active')->nullable(1)->default(1);
             $table->string('version')->nullable(2); // when you created a contract, it's already version 1.0 don't go dumb.
             $table->timestamps();
 

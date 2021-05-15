@@ -1,3 +1,9 @@
+<div class="row">
+    <div class="col-md-12">
+        @include('webpages.responses.success')
+        @include('webpages.responses.error')
+    </div>
+</div>
 <div id="contract_container" class="container">
     <div class="row">
         <div class="col-md-12">
@@ -214,30 +220,30 @@
                     @endif
 
                     @if(count($contract['station']) === 0)
-                        <div class="col">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" value="DWRX Manila;" name="station[]" id="Manila">
-                                <label class="form-check-label" for="Manila">
-                                    Manila
-                                </label>
+                            <div class="col">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" value="DWRX Manila;" name="station[]" id="Manila">
+                                    <label class="form-check-label" for="Manila">
+                                        Manila
+                                    </label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" value="DYBT Cebu;" name="station[]" id="Cebu">
-                                <label class="form-check-label" for="Cebu">
-                                    Cebu
-                                </label>
+                            <div class="col">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" value="DYBT Cebu;" name="station[]" id="Cebu">
+                                    <label class="form-check-label" for="Cebu">
+                                        Cebu
+                                    </label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" value="DXBT Davao;" name="station[]" id="Davao">
-                                <label class="form-check-label" for="Davao">
-                                    Davao
-                                </label>
+                            <div class="col">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" value="DXBT Davao;" name="station[]" id="Davao">
+                                    <label class="form-check-label" for="Davao">
+                                        Davao
+                                    </label>
+                                </div>
                             </div>
-                        </div>
                     @endif
                 </div>
             </div>
@@ -1032,5 +1038,109 @@
             </div>
         </div>
         <div class="my-3"></div>
+        <div class="row justify-content-center">
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-outline-dark btn-block"><i class="fas fa-save"></i>  Save</button>
+            </div>
+        </div>
     </form>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="new-agency-modal" tabindex="-1" role="dialog" aria-labelledby="new-agency-modal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New Agency</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="add-agency-form" data-form="Agency" data-request="add" action="{{ route('agencies.store') }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="agency_name">Agency Name</label>
+                        <input type="text" id="agency_name" name="agency_name" class="form-control" placeholder="Agency Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact_number">Contact Number</label>
+                        <input type="text" id="contact_number" name="contact_number" class="form-control" placeholder="Contact Number">
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" id="address" name="address" class="form-control" placeholder="Address">
+                    </div>
+                    <div class="form-group">
+                        <label for="kbp_accredited">KBP Status</label>
+                        <select id="kbp_accredited" name="kbp_accredited" class="custom-select">
+                            <option value="">--</option>
+                            <option value="1">Accredited</option>
+                            <option value="0">Non-Accredited</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-outline-dark"><i class="fas fa-save"></i></button>
+                        <button type="button" class="btn btn-outline-dark" data-dismiss="modal"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="new-advertiser-modal" tabindex="-1" role="dialog" aria-labelledby="new-advertiser-modal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New Advertiser</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="add-advertiser-form" data-form="Advertiser" data-request="add"  action="{{ route('advertisers.store') }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="advertiser_name">Advertiser Name</label>
+                        <input type="text" id="advertiser_name" name="advertiser_name" class="form-control" placeholder="Advertiser Name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-outline-dark"><i class="fas fa-save"></i></button>
+                        <button type="button" class="btn btn-outline-dark" data-dismiss="modal"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).on('submit', '#add-agency-form, #add-advertiser-form', function(event) {
+        event.preventDefault();
+        let url = $(this).attr('action');
+        let formData = new FormData(this);
+
+        postAsync(url, formData, 'JSON', beforeSend, onSuccess);
+
+        function beforeSend() {
+            manualToast.fire({
+                icon: 'info',
+                title: 'Please wait ...'
+            });
+        }
+
+        function onSuccess(result) {
+            $('.modal').modal('hide');
+
+            Toast.fire({
+                icon: result.status,
+                title: result.message,
+            });
+        }
+    });
+</script>

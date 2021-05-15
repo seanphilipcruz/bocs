@@ -167,8 +167,8 @@
         }
 
         function onSuccess(result) {
+            $('#add-advertiser-form ,#update-advertiser-form').trigger('reset');
             advertisersTable.ajax.reload(null, false);
-
             $('.modal').modal('hide');
 
             Toast.fire({

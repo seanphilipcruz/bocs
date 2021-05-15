@@ -19,7 +19,14 @@ use Validator;
 class SalesController extends Controller
 {
     public function index(Request $request) {
-        $sales = Sales::with('Contract.Agency', 'Contract.Advertiser', 'Contract.Employee')->get();
+        $executive = Auth::user()->id;
+        $user_level = Auth::user()->Job->level;
+
+        if($user_level === "2") {
+            $sales = Sales::with('Contract.Agency', 'Contract.Advertiser', 'Contract.Employee')->where('ae', '=', $executive)->get();
+        } else {
+            $sales = Sales::with('Contract.Agency', 'Contract.Advertiser', 'Contract.Employee')->get();
+        }
 
         foreach ($sales as $sale) {
             $sale->date = $sale['year'] . " " . $sale['month'];
@@ -62,6 +69,19 @@ class SalesController extends Controller
                 $sale->Contract->advertiser_name = "<p class='badge badge-danger text-center'>undefined</p>";
             } else {
                 $sale->Contract->advertiser_name = $sale->Contract->Advertiser->advertiser_name;
+            }
+
+            if($user_level === "2") {
+                $sale->options = "" .
+                    "<div class='btn-group'>" .
+                    "   <a href='#' data-action='breakdown' data-link='".route('sales.show.breakdowns')."' data-id='".$sale->bo_number."' modal='true' tooltip title='View Breakdowns' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-list-ul'></i></a>" .
+                    "   <a href='#update-invoice-modal' data-action='open' data-link='".route('sales.show')."' data-id='".$sale->id."' modal='true' tooltip title='Invoice Number' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
+                    "</div>";
+            } else if($user_level === "3") {
+                $sale->options = "" .
+                    "<div class='btn-group'>" .
+                    "   <a href='#update-invoice-modal' data-action='open' data-link='".route('sales.show')."' data-id='".$sale->id."' modal='true' tooltip title='Invoice Number' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
+                    "</div>";
             }
 
             $sale->options = "" .
@@ -253,23 +273,44 @@ class SalesController extends Controller
 
                 $logs->save();
 
-                if($revision->count() > 1) {
+                if($revision->count() == 1) {
                     $revision->get()->first();
 
-                    $revision->amount = $request['amount'];
-                    $revision->version = $revision->version + 1;
+                    $revision->increment('version');
 
-                    $revision->update();
-                } else {
-                    $sales_revision = new SalesRevision([
+                    $revision->update([
                         'sales_id' => $sale['id'],
                         'contract_id' => $sale['contract_id'],
+                        'bo_number' => $sale['bo_number'],
+                        'bo_type' => $sale['bo_type'],
+                        'station' => $sale['station'],
                         'month' => $sale['month'],
                         'year' => $sale['year'],
                         'type' => $sale['type'],
                         'amount_type' => $sale['amount_type'],
-                        'amount' => $request['amount'],
+                        'amount' => $sale['amount'],
                         'gross_amount' => $sale['gross_amount'],
+                        'agency_id' => $sale['agency_id'],
+                        'advertiser_id' => $sale['advertiser_id'],
+                        'ae' => $sale['ae'],
+                        'invoice_no' => $sale['invoice_no'],
+                    ]);
+                } else {
+                    $sales_revision = new SalesRevision([
+                        'sales_id' => $sale['id'],
+                        'contract_id' => $sale['contract_id'],
+                        'bo_number' => $sale['bo_number'],
+                        'bo_type' => $sale['bo_type'],
+                        'station' => $sale['station'],
+                        'month' => $sale['month'],
+                        'year' => $sale['year'],
+                        'type' => $sale['type'],
+                        'amount_type' => $sale['amount_type'],
+                        'amount' => $sale['amount'],
+                        'gross_amount' => $sale['gross_amount'],
+                        'agency_id' => $sale['agency_id'],
+                        'advertiser_id' => $sale['advertiser_id'],
+                        'ae' => $sale['ae'],
                         'invoice_no' => $sale['invoice_no'],
                         'version' => 1,
                     ]);
@@ -291,23 +332,44 @@ class SalesController extends Controller
 
                 $logs->save();
 
-                if($revision->count() > 1) {
+                if($revision->count() == 1) {
                     $revision->get()->first();
 
-                    $revision->gross_amount = $request['gross_amount'];
-                    $revision->version = $revision->version + 1;
+                    $revision->increment('version');
 
-                    $revision->update();
-                } else {
-                    $sales_revision = new SalesRevision([
+                    $revision->update([
                         'sales_id' => $sale['id'],
                         'contract_id' => $sale['contract_id'],
+                        'bo_number' => $sale['bo_number'],
+                        'station' => $sale['station'],
+                        'bo_type' => $sale['bo_type'],
                         'month' => $sale['month'],
                         'year' => $sale['year'],
                         'type' => $sale['type'],
                         'amount_type' => $sale['amount_type'],
                         'amount' => $sale['amount'],
-                        'gross_amount' => $request['gross_amount'],
+                        'gross_amount' => $sale['gross_amount'],
+                        'agency_id' => $sale['agency_id'],
+                        'advertiser_id' => $sale['advertiser_id'],
+                        'ae' => $sale['ae'],
+                        'invoice_no' => $sale['invoice_no'],
+                    ]);
+                } else {
+                    $sales_revision = new SalesRevision([
+                        'sales_id' => $sale['id'],
+                        'contract_id' => $sale['contract_id'],
+                        'bo_number' => $sale['bo_number'],
+                        'station' => $sale['station'],
+                        'bo_type' => $sale['bo_type'],
+                        'month' => $sale['month'],
+                        'year' => $sale['year'],
+                        'type' => $sale['type'],
+                        'amount_type' => $sale['amount_type'],
+                        'amount' => $sale['amount'],
+                        'gross_amount' => $sale['gross_amount'],
+                        'agency_id' => $sale['agency_id'],
+                        'advertiser_id' => $sale['advertiser_id'],
+                        'ae' => $sale['ae'],
                         'invoice_no' => $sale['invoice_no'],
                         'version' => 1,
                     ]);
@@ -339,6 +401,8 @@ class SalesController extends Controller
     }
 
     public function breakdowns(Request $request) {
+        $user_level = Auth::user()->Job->level;
+
         $sales_breakdown = Sales::with('Contract.Agency', 'Contract.Advertiser', 'Contract.Employee')->where('bo_number', $request['bo_number'])->get();
 
         foreach ($sales_breakdown as $breakdowns) {
@@ -348,12 +412,32 @@ class SalesController extends Controller
 
             $breakdowns->gross_amount = number_format($breakdowns->gross_amount, 2);
 
-            $breakdowns->options = "" .
-                "<div class='btn-group'>" .
-                "   <a href='#update-sale-modal' data-link='".route('sales.show')."' data-action='open' data-id='".$breakdowns->id."' modal='true' tooltip title='Update Sales Breakdown' data-placement='Bottom' data-toggle='modal' class='btn btn-outline-dark'>" .
-                "       <i class='fas fa-edit'></i>" .
-                "   </a>" .
-                "</div>";
+            if($user_level === "0") {
+                $breakdowns->options = "" .
+                    "<div class='btn-group'>" .
+                    "   <a href='#update-sale-modal' data-link='".route('sales.show')."' data-action='open' data-id='".$breakdowns->id."' modal='true' tooltip title='Update Sales Breakdown' data-placement='Bottom' data-toggle='modal' class='btn btn-outline-dark'>" .
+                    "       <i class='fas fa-edit'></i>" .
+                    "   </a>" .
+                    "</div>";
+            } else if($user_level === "1") {
+                $breakdowns->options = "" .
+                    "<div class='btn-group'>" .
+                    "   <a href='#update-sale-modal' data-link='".route('sales.show')."' data-action='open' data-id='".$breakdowns->id."' modal='true' tooltip title='Update Sales Breakdown' data-placement='Bottom' data-toggle='modal' class='btn btn-outline-dark'>" .
+                    "       <i class='fas fa-edit'></i>" .
+                    "   </a>" .
+                    "</div>";
+            } else if($user_level === "2") {
+                $breakdowns->options = "";
+            } else if($user_level === "3") {
+                $breakdowns->options = "";
+            } else {
+                $breakdowns->options = "" .
+                    "<div class='btn-group'>" .
+                    "   <a href='#update-sale-modal' data-link='".route('sales.show')."' data-action='open' data-id='".$breakdowns->id."' modal='true' tooltip title='Update Sales Breakdown' data-placement='Bottom' data-toggle='modal' class='btn btn-outline-dark'>" .
+                    "       <i class='fas fa-edit'></i>" .
+                    "   </a>" .
+                    "</div>";
+            }
         }
 
         $bo_number = $request['bo_number'];
@@ -534,19 +618,33 @@ class SalesController extends Controller
                     $sales->gross_sales = number_format($sales->gross_sales, 2);
                 }
 
-                $gross_sales = $sales_report->where('month', date('m'))->where('year', date('Y'))->pluck('gross_sales')->first(
-
-                );
+                $gross_sales = $sales_report->where('month', date('m'))->where('year', date('Y'))->pluck('gross_sales')->first();
 
                 return view('webpages.sales_monthly', compact('sales_report', 'gross_sales'));
             }
 
+            if($request['switch'] == "executive") {
+                $sales_report = Sales::with('Employee')->selectRaw('month, year, sum(gross_amount) as gross_sales, ae')
+                    ->orderBy('year', 'desc')
+                    ->orderBy('month')
+                    ->groupBy(['month', 'year', 'ae'])
+                    ->get();
+
+                foreach($sales_report as $sales) {
+                    $sales->gross_sales = number_format($sales->gross_sales, 2);
+                }
+
+                $gross_sales = number_format(array_sum(Sales::all()->pluck('gross_amount')->toArray()), 2);
+
+                return view('webpages.sales_executive', compact('sales_report', 'gross_sales'));
+            }
+
             if($request['sort']) {
-                return view('webpages.sales_report', compact('sales_report','gross_sales', 'month', 'advertisers', 'month', 'agencies', 'executives', 'yearly_sales'));
+                return view('webpages.sales_report', compact('sales_report','gross_sales', 'month', 'advertisers', 'agencies', 'executives', 'yearly_sales'));
             }
 
             if($request['navigation']) {
-                return view('webpages.sales_report', compact('sales_report','gross_sales', 'month', 'advertisers', 'month', 'agencies', 'executives', 'yearly_sales'));
+                return view('webpages.sales_report', compact('sales_report','gross_sales', 'month', 'advertisers', 'agencies', 'executives', 'yearly_sales'));
             }
         }
 

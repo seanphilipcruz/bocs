@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Advertiser;
 use App\AgencyAdvertiserLogs;
 use Auth;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -29,6 +28,16 @@ class AdvertiserController extends Controller
         }
 
         if($request->ajax()) {
+            if($request->has('search')) {
+                $search_query = Advertiser::where('advertiser_name', '=', $request['value']);
+
+                if($search_query->count() == 1) {
+                    return $search_query->get()->first();
+                } else {
+                    return response()->json(['status' => 'non-existing']);
+                }
+            }
+
             if($request->has('navigation')) {
                 return view('webpages.advertisers');
             }

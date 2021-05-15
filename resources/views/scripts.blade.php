@@ -424,6 +424,11 @@
                         window.history.pushState("", "", '/sales/monthly');
                     }
 
+                    if(type === 'executive') {
+                        document.title = 'Sales Report - Executives View';
+                        window.history.pushState("", "", '/sales/executives');
+                    }
+
                     if(type === 'child_bo') {
                         document.title = 'Contracts - Child BO';
                         window.history.pushState("", "", '/contracts/bo/child');
@@ -442,7 +447,7 @@
                     if(type === 'inactive_child_bo') {
                         document.title = "Contracts - Non-Active Child BO";
                         window.history.pushState("", "", '/contracts/bo/child/non-active');
-                    }
+                    }``
 
                     $('#main_content').fadeOut(500, () => {
                         $('#main_content').empty();
@@ -643,7 +648,6 @@
 
     }
 
-    // mainly used a ternary operator for the missing elements so it could fill 'em if they're missing
     function findSalesTotal() {
         type = $('#type').val();
         amount = $('#sale_amount').val();
@@ -715,13 +719,15 @@
     });
 
     // adding the details
-    $(document).on('change', '#template, #template1, #template2, #template3, #template4, #template5, #template6, #template7', function(event) {
-        event.preventDefault();
-        let template = $(this).val();
-        let detail = $('#detail');
-        let detail_value = detail.val();
+    $(document).on('change', '#template, #template1, #template2, #template3, #template4, #template5, #template6, #template7', function() {
+        key = $(this).attr('id');
 
-        detail.append(template + " ");
+        value = $( '#'+key+' option:selected' ).text();
+
+        detail = $('#detail').val();
+        $('#detail').val(detail + " " + value);
+
+        $(this).prop('selectedIndex',0);
     });
 
     // form functions
@@ -813,6 +819,7 @@
         event.preventDefault();
 
         let url = $(this).attr('action');
+        let home_url = '{{ route('contracts') }}';
         let formData = new FormData(this);
         let formType = $(this).attr('data-form');
         let requestType = $(this).attr('data-request');
@@ -824,32 +831,160 @@
         }
 
         function onSuccess(result) {
-            $(':button[type="submit"]').removeAttr('disabled');
-            $('.modal').modal('hide');
+            $('button[type="submit"]').removeAttr('disabled');
 
             if(requestType == "update") {
-                Toast.fire({
-                    icon: 'success',
-                    title: formType+' has been updated!'
-                });
+                getAsync(home_url, { 'navigation': 'navigation' }, 'HTML', beforeSend, onSuccess);
+
+                function beforeSend() {
+
+                }
+
+                function onSuccess(result) {
+                    $('#main_content').fadeOut(500, () => {
+                        $('#main_content').empty();
+                        $('#main_content').fadeIn(500, () => {
+                            $('#main_content').append(result);
+                        });
+                    });
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: formType+' has been updated!'
+                    });
+                }
             } else {
-                Toast.fire({
-                    icon: 'success',
-                    title: 'A new '+formType+' has been saved!'
-                });
+                getAsync(home_url, { 'navigation': 'navigation' }, 'HTML', beforeSend, onSuccess);
+
+                function beforeSend() {
+
+                }
+
+                function onSuccess(result) {
+                    $('#main_content').fadeOut(500, () => {
+                        $('#main_content').empty();
+                        $('#main_content').fadeIn(500, () => {
+                            $('#main_content').append(result);
+                        });
+                    });
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'A new '+formType+' has been saved!'
+                    });
+                }
             }
         }
     });
 
+    // for toggling in the my job tab
     $(document).on('click', '.nav-pills > .nav-item > a.nav-link', function() {
         $('.nav-pills > .nav-item > a.nav-link.active').removeClass('active');
         $(this).addClass('active');
     });
 
+    // for collapse in the my job tab
     $(document).on('click', 'a[data-toggle="collapse"]', function() {
         let button = $(this).attr('href');
 
         $('.collapse.show').collapse('hide');
         $('a'+button+'').addClass('show');
     });
+
+    // show/hide parent_bo field
+    $(document).on('change', '#bo_type', function() {
+        let select_parent_bo = $('#select_parent_bo');
+        let type = $(this).val();
+
+        if(type == "child") {
+            select_parent_bo.removeAttr('hidden');
+        } else {
+            select_parent_bo.prop('hidden', 'hidden');
+        }
+    });
+
+    // verify if the agency or advertiser name is already existing
+    $(document).on('change', '#agency_name, #advertiser_name', function() {
+        let selector = $(this).attr('id');
+        let selector_value = $(this).val();
+
+        if(selector.includes('agency')) {
+            getAsync('{{ route('agencies') }}', { "search": "search", "value": selector_value }, 'JSON', beforeSend, onSuccess);
+
+            function beforeSend() {
+                manualToast.fire({
+                    icon: 'info',
+                    title: 'Checking if agency is existing ...'
+                });
+            }
+
+            function onSuccess(result) {
+                if(result.status === "non-existing") {
+                    $('#address, #contact_number').val('');
+                    $('button[type="submit"]').removeAttr('disabled');
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'No existing agency with the name of ' + selector_value
+                    });
+                } else {
+                    Toast.fire({
+                        icon: 'warning',
+                        title: 'Existing agency with the name of ' + selector_value + ' has been found'
+                    });
+
+                    $('#agency_name, #address, #contact_number').val('');
+
+                    $('#agency_name').val(result.agency_name);
+                    $('#address').val(result.address);
+                    $('#contact_number').val(result.contact_number);
+                    $('#kbp_accredited').val(result.kbp_accredited);
+
+                    $('button[type="submit"]').prop('disabled', 'disabled');
+
+                    $('.modal').on('hide.bs.modal', function() {
+                        $('#agency_name, #address, #contact_number').val('');
+                        $('button[type="submit"]').removeAttr('disabled');
+                    });
+                }
+            }
+        } else {
+            getAsync('{{ route('advertisers') }}', { "search": "search", "value": selector_value }, 'JSON', beforeSend, onSuccess);
+
+            function beforeSend() {
+                manualToast.fire({
+                    icon: 'info',
+                    title: 'Checking if advertiser is existing ...'
+                });
+            }
+
+            function onSuccess(result) {
+                if(result.status === "non-existing") {
+                    $('#advertiser_name').val('');
+                    $('button[type="submit"]').removeAttr('disabled');
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'No existing advertiser with the name of ' + selector_value
+                    });
+                } else {
+                    Toast.fire({
+                        icon: 'warning',
+                        title: 'Existing advertiser with the name of ' + selector_value + ' has been found'
+                    });
+
+                    $('#advertiser_name').val('');
+
+                    $('#advertiser_name').val(result.advertiser_name);
+
+                    $('button[type="submit"]').prop('disabled', 'disabled');
+
+                    $('.modal').on('hide.bs.modal', function() {
+                        $('#advertiser_name').val('');
+                        $('button[type="submit"]').removeAttr('disabled');
+                    });
+                }
+            }
+        }
+    })
 </script>

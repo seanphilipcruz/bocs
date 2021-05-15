@@ -53,12 +53,6 @@
                         @else
                             @if(auth()->user()->Job->level === "1")
                                 <li class="nav-item">
-                                    <a href="{{ route('advertisers') }}" id="advertisers" class="nav-link" navigation>{{ __('Advertisers') }}</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('agencies') }}" id="agencies" class="nav-link" navigation>{{ __('Agencies') }}</a>
-                                </li>
-                                <li class="nav-item">
                                     <a href="{{ route('contracts') }}" id="contracts" class="nav-link" navigation>{{ __('Contracts') }}</a>
                                 </li>
                                 <li class="nav-item dropdown">
@@ -74,6 +68,19 @@
                                 </li>
                             @elseif(auth()->user()->Job->level === "2")
                                 <li class="nav-item">
+                                    <a href="{{ route('advertisers') }}" id="advertisers" class="nav-link" navigation>{{ __('Advertisers') }}</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('agencies') }}" id="agencies" class="nav-link" navigation>{{ __('Agencies') }}</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('contracts') }}" id="contracts" class="nav-link" navigation>{{ __('Contracts') }}</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('sales') }}" id="sales" class="nav-link" navigation>{{ __('Sales') }}</a>
+                                </li>
+                            @elseif(auth()->user()->Job->level === "3")
+                                <li class="nav-item">
                                     <a href="{{ route('contracts') }}" id="contracts" class="nav-link" navigation>{{ __('Contracts') }}</a>
                                 </li>
                                 <li class="nav-item dropdown">
@@ -83,16 +90,6 @@
                                         <a href="{{ route('sales') }}" id="sales" class="dropdown-item" navigation>{{ __('Sales') }}</a>
                                         <a href="{{ route('sales.reports') }}" id="sales_report" class="dropdown-item" navigation>{{ __('Reports') }}</a>
                                     </div>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('archives') }}" id="archives" class="nav-link" navigation>{{ __('Archives') }}</a>
-                                </li>
-                            @elseif(auth()->user()->Job->level === "3")
-                                <li class="nav-item">
-                                    <a href="{{ route('contracts') }}" id="contracts" class="nav-link" navigation>{{ __('Contracts') }}</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('sales') }}" id="sales" class="nav-link" navigation>{{ __('Sales') }}</a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="{{ route('archives') }}" id="archives" class="nav-link" navigation>{{ __('Archives') }}</a>
@@ -288,21 +285,13 @@
                             @elseif(auth()->user()->Job->level === "2")
                                 <ul class="nav nav-pills nav-fill">
                                     <li class="nav-item">
-                                        <a class="nav-link active" href="#view_contracts" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="view_contracts">View Contracts</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#edit_sales_breakdown" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="edit_sales_breakdown">Add Sales Breakdown</a>
+                                        <a class="nav-link active" href="#view_contracts" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="view_contracts">Add/View Contracts</a>
                                     </li>
                                 </ul>
                                 <div class="m-3">
                                     <div id="view_contracts" class="collapse show">
                                         <div class="card card-body text-center">
-                                            <h5>You can <button type="button" class="btn btn-outline-dark"><i class="fas fa-edit"></i>  View</button> Contracts and Sales Breakdowns</h5>
-                                        </div>
-                                    </div>
-                                    <div id="edit_sales_breakdown" class="collapse">
-                                        <div class="card card-body text-center">
-                                            <h5>You can <button type="button" class="btn btn-outline-dark"><i class="fas fa-edit"></i>  Add </button> Sales Breakdowns</h5>
+                                            <h5>You can <button type="button" class="btn btn-outline-dark"><i class="fas fa-plus"></i>  Add</button> <button type="button" class="btn btn-outline-dark"><i class="fas fa-edit"></i>  View</button> Contracts and Sales Breakdowns</h5>
                                         </div>
                                     </div>
                                 </div>

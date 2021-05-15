@@ -1,8 +1,9 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <div class="fa-pull-left">
+            <div class="fa-pull-left btn-group">
                 <a href="#" data-link="{{ route('sales.reports') }}" data-action="switch" data-switch="monthly" class="btn btn-outline-dark"><i class="fas fa-exchange-alt"></i>  Monthly View</a>
+                <a href="#" data-link="{{ route('sales.reports') }}" data-action="switch" data-switch="executive" class="btn btn-outline-dark"><i class="fas fa-user-alt"></i>  Executives View</a>
             </div>
             <div class="fa-pull-right">
                 <a href="#sort-modal" data-toggle="modal" class="btn btn-outline-dark"><i class="fas fa-wrench"></i>  Sort</a>
