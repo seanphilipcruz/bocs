@@ -14,7 +14,6 @@
                     <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Id</th>
                         <th>Contract Number</th>
                         <th>BO Number</th>
                         <th>Type</th>
@@ -159,7 +158,6 @@
         },
         columns: [
             { data: 'date' },
-            { data: 'id' },
             { data: 'contract.contract_number' },
             { data: 'contract.bo_number' },
             { data: 'type' },

@@ -217,7 +217,7 @@
             { data: 'options' }
         ],
         order: [
-            [ 0, 'desc' ]
+            [ 0, 'desc']
         ]
     });
 

@@ -524,8 +524,11 @@
         }
     });
 
+    // focus on the first input or select field.
     $(document).on('shown.bs.modal', function () {
-        console.log($(this).find('input[type="text"]').first().focus());
+        $(this).find('input[type="text"]').first().focus() ?
+            $(this).find('input[type="text"]').first().focus() : $(this).find('input[type="password"]').first().focus() ?
+            $(this).find('input[type="password"]').first().focus() : $(this).find('select').first().focus();
     });
 
     $(document).on('change', '#sort_by', function () {

@@ -287,14 +287,19 @@ class ContractController extends Controller
 
         if($validator->passes()) {
             // creation of contract number
-            $contract_number = date('Ymd') . '-' . $firstName[0] . $middleName[0] . $lastName[0] . '-' . mt_rand(999, 9999);
+            $contract_number = date('Ymd') . '-' . $firstName[0] . $middleName[0] . $lastName[0] . '-' . mt_rand(100000, 999999);
 
-            $stations = implode(";", $request['station']);
+            // storing the stations array as a string
+            $stations = implode($request['station']);
+
+            $request['station'] = $stations;
 
             $request['contract_number'] = $contract_number;
             $request['ae'] = Auth::user()->id;
 
-            Contract::create($request->all());
+            $contract = new Contract($request->all());
+
+            $contract->save();
 
             $new_contract = Contract::latest()->get()->first();
 

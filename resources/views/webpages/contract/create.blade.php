@@ -27,7 +27,7 @@
                 <div id="station" class="row text-center">
                     <div class="col">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" value="DWRX Manila" name="station[]" id="Manila">
+                            <input class="form-check-input" type="checkbox" value="DWRX Manila;" name="station[]" id="Manila">
                             <label class="form-check-label" for="Manila">
                                 Manila
                             </label>
@@ -35,7 +35,7 @@
                     </div>
                     <div class="col">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" value="DYBT Cebu" name="station[]" id="Cebu">
+                            <input class="form-check-input" type="checkbox" value="DYBT Cebu;" name="station[]" id="Cebu">
                             <label class="form-check-label" for="Cebu">
                                 Cebu
                             </label>
@@ -43,7 +43,7 @@
                     </div>
                     <div class="col">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" value="DXBT Davao" name="station[]" id="Davao">
+                            <input class="form-check-input" type="checkbox" value="DXBT Davao;" name="station[]" id="Davao">
                             <label class="form-check-label" for="Davao">
                                 Davao
                             </label>
@@ -616,6 +616,7 @@
         }
 
         function onSuccess(result) {
+            console.log(result);
             $('.modal').modal('hide');
 
             Toast.fire({

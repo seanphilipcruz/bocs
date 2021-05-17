@@ -84,9 +84,9 @@ class EmployeeController extends Controller
         $validator = Validator::make($request->all(), [
            'last_name' => 'required',
            'first_name' => 'required',
-           'middle_name' => 'required',
            'date_of_birth' => 'required',
            'job_id' => 'required',
+           'status' => 'required'
         ]);
 
         if($validator->passes()) {
@@ -121,27 +121,35 @@ class EmployeeController extends Controller
     public function ChangePassword($id, Request $request) {
         $employee = Employee::findOrFail($id);
 
-        if($request->ajax()) {
-            $current_password = $employee['password'];
+        $validation = Validator::make($request->all(), [
+            'password' => ['confirmed', 'min:6', 'required']
+        ]);
 
-            $verify = Hash::check($request['password'], $current_password);
+        if($validation->passes()) {
+            if($request->ajax()) {
+                $current_password = $employee['password'];
 
-            if($verify) {
-                $employee['password'] = $request['password'];
+                $verify = Hash::check($request['current_password'], $current_password);
 
-                $employee->update();
+                if($verify) {
+                    $request['password'] = Hash::make($request['password']);
 
-                $this->Log('Changed an employee\'s password', $employee->id, Auth::user()->id);
+                    $employee['password'] = $request['password'];
 
-                return response()->json(['status' => 'success', 'message' => 'Password successfully changed!']);
+                    $employee->update();
+
+                    $this->Log('Changed an employee\'s password', $employee->id, Auth::user()->id);
+
+                    return response()->json(['status' => 'success', 'message' => 'Password successfully changed!']);
+                }
+
+                $this->Log('Attempted to change an Employee\'s Password', $employee->id, Auth::user()->id);
+
+                return response()->json(['status' => 'error', 'message' => 'Passwords do not match!']);
             }
-
-            $this->Log('Attempted to change an Employee\'s Password', $employee->id, Auth::user()->id);
-
-            return response()->json(['status' => 'error', 'message' => 'Passwords do not match!']);
         }
 
-        return response()->json(['status' => 'error', 'message' => 'Bad request'], 403);
+        return response()->json(['status' => 'error', 'message' => $validation->errors()->all()]);
     }
 
 

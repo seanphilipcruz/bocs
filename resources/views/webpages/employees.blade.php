@@ -304,7 +304,7 @@
         }
 
         function onSuccess(result) {
-            $('#first_name, #middle_name, #last_name, #nickname, #username, #date_of_birth').val('');
+            $('#first_name, #middle_name, #last_name, #nickname, #username, #date_of_birth, #current_password, #password, #password_confirmation').val('');
             employeesTable.ajax.reload(null, false);
             $('.modal').modal('hide');
 
