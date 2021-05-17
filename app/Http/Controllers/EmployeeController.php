@@ -86,7 +86,7 @@ class EmployeeController extends Controller
            'first_name' => 'required',
            'date_of_birth' => 'required',
            'job_id' => 'required',
-           'status' => 'required'
+           'is_active' => 'required'
         ]);
 
         if($validator->passes()) {
@@ -138,7 +138,7 @@ class EmployeeController extends Controller
 
                     $employee->update();
 
-                    $this->Log('Changed an employee\'s password', $employee->id, Auth::user()->id);
+                    $this->Log('Changed '. $employee->first_name .'\'s password', $employee->id, Auth::user()->id);
 
                     return response()->json(['status' => 'success', 'message' => 'Password successfully changed!']);
                 }
