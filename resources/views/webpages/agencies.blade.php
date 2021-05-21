@@ -202,6 +202,7 @@
         postAsync(url, formData, 'JSON', beforeSend, onSuccess);
 
         function beforeSend() {
+            $('button[type="submit"]').attr('disabled', 'disabled');
             manualToast.fire({
                 icon: 'info',
                 title: 'Please wait ...'
@@ -209,6 +210,7 @@
         }
 
         function onSuccess(result) {
+            $('button[type="submit"]').removeAttr('disabled');
             $('#agency_name, #contact_number, #address').val('');
             agenciesTable.ajax.reload(null, false);
             $('.modal').modal('hide');

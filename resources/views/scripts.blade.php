@@ -894,6 +894,7 @@
             getAsync(url, { "sort": "all" }, 'HTML', beforeSend, onSuccess);
 
             function beforeSend() {
+            $('button[type="submit"]').attr('disabled', 'disabled');
                 $('#sort-modal').modal('hide');
                 manualToast.fire({
                     icon: 'info',
@@ -902,6 +903,7 @@
             }
 
             function onSuccess(result) {
+            $('button[type="submit"]').removeAttr('disabled');
                 $('#main_content').fadeOut(500, () => {
                     $('#main_content').empty();
                     $('#main_content').fadeIn(500, () => {
@@ -971,7 +973,7 @@
         postAsync(url, formData, 'HTML' ? 'HTML' : 'JSON', beforeSend, onSuccess);
 
         function beforeSend() {
-            $(':button[type="submit"]').attr('disabled', 'disabled');
+            $('button[type="submit"]').attr('disabled', 'disabled');
         }
 
         function onSuccess(result) {

@@ -239,6 +239,7 @@
         postAsync(url, formData, 'HTML', beforeSend, onSuccess);
 
         function beforeSend() {
+            $('button[type="submit"]').attr('disabled', 'disabled');
             manualToast.fire({
                 icon: 'info',
                 title: 'Please wait ...'
@@ -246,6 +247,7 @@
         }
 
         function onSuccess(result) {
+            $('button[type="submit"]').removeAttr('disabled');
             $('#job_description').val('');
             jobsTable.ajax.reload(null, false);
             $('.modal').modal('hide');

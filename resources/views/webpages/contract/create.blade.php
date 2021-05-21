@@ -627,6 +627,7 @@
         postAsync(url, formData, 'JSON', beforeSend, onSuccess);
 
         function beforeSend() {
+            $('button[type="submit"]').attr('disabled', 'disabled');
             manualToast.fire({
                 icon: 'info',
                 title: 'Please wait ...'
@@ -634,6 +635,7 @@
         }
 
         function onSuccess(result) {
+            $('button[type="submit"]').removeAttr('disabled');
             $('.modal').modal('hide');
 
             Toast.fire({

@@ -301,6 +301,7 @@
         postAsync(url, formData, 'JSON', beforeSend, onSuccess);
 
         function beforeSend() {
+            $('button[type="submit"]').attr('disabled', 'disabled');
             manualToast.fire({
                 icon: 'info',
                 title: 'Please wait ...'
@@ -308,6 +309,7 @@
         }
 
         function onSuccess(result) {
+            $('button[type="submit"]').removeAttr('disabled');
             $('#first_name, #middle_name, #last_name, #nickname, #username, #date_of_birth, #current_password, #password, #password_confirmation').val('');
             employeesTable.ajax.reload(null, false);
             $('.modal').modal('hide');
