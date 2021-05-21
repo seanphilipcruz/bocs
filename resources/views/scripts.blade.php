@@ -32,8 +32,12 @@
                 if(xhr.responseJSON) {
                     let errors = "";
 
-                    for(let i = 0; i < xhr.responseJSON.message.length; i++) {
-                        errors += '<p>'+xhr.responseJSON.message[i]+'</p>';
+                    if(Array.isArray(xhr.responseJSON)) {
+                        for(let i = 0; i <= xhr.responseJSON.length; i++) {
+                            errors = '<p>'+xhr.responseJSON[i].message+'</p>';
+                        }
+                    } else {
+                        errors = '<p>'+xhr.responseJSON.message+'</p>';
                     }
 
                     manualToast.fire({
@@ -72,8 +76,16 @@
                 if(xhr.responseJSON) {
                     let errors = "";
 
-                    for(let i = 0; i < xhr.responseJSON.message.length; i++) {
-                        errors += '<p>'+xhr.responseJSON.message[i]+'</p>';
+                    if(Array.isArray(xhr.responseJSON)) {
+                        for(let i = 0; i <= xhr.responseJSON.length; i++) {
+                            errors = '<p>'+xhr.responseJSON[i].message+'</p>';
+                        }
+                    } else {
+                        if(xhr.responseJSON.message.includes('SQLSTATE[23000]')) {
+                            errors = '<p>Advertiser or Agency should not be <span class="badge badge-danger">Undefined</span></p>';
+                        } else {
+                            errors = '<p>'+xhr.responseJSON.message+'</p>';
+                        }
                     }
 
                     manualToast.fire({
@@ -83,10 +95,21 @@
                             ''+errors+'',
                     });
                 } else {
-                    manualToast.fire({
-                        icon: 'error',
-                        title: xhr.status + ' ' + xhr.statusText,
-                    });
+                    if(xhr.responseText.includes('SQLSTATE[23000]')) {
+                        errors = '<p>Advertiser or Agency should not be <span class="badge badge-danger">Undefined</span></p>';
+
+                        manualToast.fire({
+                            icon: 'error',
+                            title: 'Error/s had been encountered while processing your request',
+                            html: '' +
+                                ''+errors+'',
+                        });
+                    } else {
+                        manualToast.fire({
+                            icon: 'error',
+                            title: xhr.status + ' ' + xhr.statusText,
+                        });
+                    }
                 }
             }
         });
@@ -95,6 +118,24 @@
     $(document).ready(function() {
         // Initiations
         $('[tooltip]').tooltip();
+
+        $(window).on('keydown', function(event) {
+            // Enter key
+            if(event.keyCode === 13) {
+                $(this).submit();
+            }
+
+            // F5 key
+            if(event.keyCode === 116) {
+                event.preventDefault();
+                let path = window.location.pathname;
+
+                // TODO: Refresh the webpage where it was.
+                window.location.replace('/');
+
+                console.log(path);
+            }
+        });
     });
 
     // How the navigation works
@@ -107,11 +148,15 @@
             getAsync(url, { "logs": navigation }, 'HTML', beforeSend, onSuccess);
 
             function beforeSend() {
-
+                manualToast.fire({
+                    icon: 'info',
+                    title: 'Loading ...'
+                });
             }
 
             function onSuccess(result) {
-                if  (navigation === "employee_logs") {
+                manualToast.close();
+                if (navigation === "employees_logs") {
                     document.title = "Employees - Logs";
                     window.history.pushState("", "", '/employees/logs');
                 } else if (navigation === "contract_logs") {
@@ -120,13 +165,37 @@
                 } else if (navigation === "advertiser_logs") {
                     document.title = "Advertiser - Logs";
                     window.history.pushState("", "", '/advertisers/logs');
-                } else if(navigation === "agency_logs") {
+                } else if (navigation === "agency_logs") {
                     document.title = "Agency - Logs";
                     window.history.pushState("", "", '/agency/logs');
-                } else if(navigation === "sales_logs") {
+                } else if (navigation === "sales_logs") {
                     document.title = "Sales - Logs";
                     window.history.pushState("", "", '/sales/logs');
                 }
+
+                container = $('#main_content');
+
+                container.fadeOut(500, () => {
+                    container.empty();
+                    container.fadeIn(500, () => {
+                        container.append(result);
+                    });
+                });
+            }
+        } else if(navigation.includes('breakdowns')) {
+            getAsync(url, { "navigation": navigation }, 'HTML', beforeSend, onSuccess);
+
+            function beforeSend() {
+                manualToast.fire({
+                    icon: 'info',
+                    title: 'Loading ...'
+                });
+            }
+
+            function onSuccess(result) {
+                manualToast.close();
+                document.title = "Sales Breakdowns";
+                window.history.pushState("", "", '/sales/breakdowns');
 
                 container = $('#main_content');
 
@@ -141,13 +210,17 @@
             getAsync(url, { "navigation": "navigation" }, 'HTML', beforeSend, onSuccess);
 
             function beforeSend() {
-
+                manualToast.fire({
+                    icon: 'info',
+                    title: 'Loading ...'
+                });
             }
 
             function onSuccess(result) {
+                manualToast.close();
                 if (navigation === 'archives') {
                     document.title = "Compare Contracts";
-                    window.history.pushState("", "", '/' + navigation + '/contracts');
+                    window.history.pushState("", "", '/' + navigation + '/contract');
                 } else if (navigation === 'contracts') {
                     document.title = "Contracts - Active"
                     window.history.pushState("", "", '/' + navigation + '/active');
@@ -157,6 +230,9 @@
                 } else if (navigation === "employees") {
                     document.title = "Employees - Accounts"
                     window.history.pushState("", "", '/' + navigation + '/accounts');
+                } else if(navigation === "sales") {
+                    document.title = "Contract Sales";
+                    window.history.pushState("", "", '/contract/sales');
                 } else {
                     document.title = navigation.substring(0, 1).toUpperCase() + navigation.substring(1, navigation.length);
                     window.history.pushState("", "", '/' + navigation);
@@ -192,11 +268,14 @@
             getAsync(url, { "id": data_id, "modal": modal }, 'JSON', beforeSend, onSuccess);
 
             function beforeSend() {
-
+                manualToast.fire({
+                    icon: 'info',
+                    title: 'Loading ...'
+                });
             }
 
             function onSuccess(result) {
-                console.log(result);
+                manualToast.close();
                 if(result.employee) {
                     // employee
                     // setting the input fields empty
@@ -262,7 +341,6 @@
                 }
 
                 if(result.contract) {
-                    console.log(result.contract.is_active);
                     // contract
                     $('#delete-contract-form-body, #contract-status-title, #contract-status-form-body, #contract-status-button, #bo_number, #bo_number_text, #package_cost, #package_cost_vat, #package_cost_salesdc, #prod_cost, #prod_cost_vat, #prod_cost_salesdc').empty();
 
@@ -283,11 +361,17 @@
                     }
 
                     // for adding Sales Breakdown
+                    $('#contract_id').val(result.contract.id);
                     $('#bo_number_text').text(result.contract.bo_number);
                     $('#bo_number').val(result.contract.bo_number);
                     $('#package_cost').val(result.contract.package_cost);
                     $('#package_cost_vat').val(result.contract.package_cost_vat);
                     $('#package_cost_salesdc').val(result.contract.package_cost_salesdc);
+
+                    $('#bo_type').val(result.contract.bo_type);
+                    $('#agency_id').val(result.contract.agency_id);
+                    $('#advertiser_id').val(result.contract.advertiser_id);
+                    $('#employee_id').val(result.contract.ae);
 
                     $('#prod_cost').val(result.contract.prod_cost);
                     $('#prod_cost_vat').val(result.contract.prod_cost_vat);
@@ -349,10 +433,14 @@
             getAsync(url, null, 'HTML', beforeSend, onSuccess);
 
             function beforeSend() {
-
+                manualToast.fire({
+                    icon: 'info',
+                    title: 'Loading ...'
+                });
             }
 
             function onSuccess(result) {
+                manualToast.close();
                 document.title = 'New Contract';
                 window.history.pushState("", "", '/contracts/new');
 
@@ -376,6 +464,7 @@
             }
 
             function onSuccess(result) {
+                manualToast.close();
                 document.title = 'View Contract';
                 window.history.pushState("", "View Contract", '/contracts/show/'+data_id);
 
@@ -393,32 +482,104 @@
         }
         // switching
         if(action_type === 'switch') {
-            if(contract_type == 'child_inactive') {
+            if(contract_type === 'child_inactive') {
                 getAsync(url, { "action": action_type, "switch": type, "child_bo": "inactive" }, 'HTML', beforeSend, onSuccess);
 
                 function beforeSend() {
-
+                    manualToast.fire({
+                        icon: 'info',
+                        title: 'Loading ...'
+                    });
                 }
 
                 function onSuccess(result) {
-                    document.title = "Contracts - Non-Active Child BO";
-                    window.history.pushState("", "", '/contracts/bo/child/non-active');
+                    manualToast.close();
+                    if(url.includes('sales')) {
+                        document.title = "Contract Sales - Non-Active Child BO";
+                        window.history.pushState("", "", '/sales/contracts/bo/child/non-active');
 
-                    $('#main_content').fadeOut(500, () => {
-                        $('#main_content').empty();
-                        $('#main_content').fadeIn(500, () => {
-                            $('#main_content').append(result);
+                        $('#main_content').fadeOut(500, () => {
+                            $('#main_content').empty();
+                            $('#main_content').fadeIn(500, () => {
+                                $('#main_content').append(result);
+                            });
                         });
-                    });
+                    } else {
+                        document.title = "Contracts - Non-Active Child BO";
+                        window.history.pushState("", "", '/contracts/bo/child/non-active');
+
+                        $('#main_content').fadeOut(500, () => {
+                            $('#main_content').empty();
+                            $('#main_content').fadeIn(500, () => {
+                                $('#main_content').append(result);
+                            });
+                        });
+                    }
                 }
             } else {
                 getAsync(url, { "action": action_type, "switch": type }, 'HTML', beforeSend, onSuccess);
 
                 function beforeSend() {
-
+                    manualToast.fire({
+                        icon: 'info',
+                        title: 'Loading ...'
+                    });
                 }
 
                 function onSuccess(result) {
+                    manualToast.close();
+                    if(url.includes('sales')) {
+                        if(type === 'parent') {
+                            document.title = 'Contract Sales - Parent BO';
+                            window.history.pushState("", "", '/sales/contracts/bo/parent');
+                        }
+
+                        if(type === 'inactive_parent') {
+                            document.title = 'Contract Sales - Inactive Parent BO';
+                            window.history.pushState("", "", '/sales/contracts/bo/parent/inactive');
+                        }
+
+                        if(type === 'child_bo') {
+                            document.title = 'Contract Sales - Child BO';
+                            window.history.pushState("", "", '/sales/contracts/bo/child');
+                        }
+
+                        if(type === 'inactive') {
+                            document.title = 'Contract Sales - Inactive';
+                            window.history.pushState("", "", '/sales/contracts/inactive');
+                        }
+
+                        if(type === 'inactive_child_bo') {
+                            document.title = "Contract Sales - Non-Active Child BO";
+                            window.history.pushState("", "", '/sales/contracts/bo/child/non-active');
+                        }
+                    } else {
+                        if(type === 'inactive') {
+                            document.title = 'Contracts - Inactive';
+                            window.history.pushState("", "", '/contracts/inactive');
+                        }
+
+                        if(type === 'child_bo') {
+                            document.title = 'Contracts - Child BO';
+                            window.history.pushState("", "", '/contracts/bo/child');
+                        }
+
+                        if(type === 'inactive_child_bo') {
+                            document.title = "Contracts - Non-Active Child BO";
+                            window.history.pushState("", "", '/contracts/bo/child/non-active');
+                        }
+
+                        if(type === 'parent') {
+                            document.title = 'Contracts - Parent BO';
+                            window.history.pushState("", "", '/contracts/bo/parent');
+                        }
+
+                        if(type === 'inactive_parent') {
+                            document.title = 'Contracts - Inactive Parent BO';
+                            window.history.pushState("", "", '/contracts/bo/parent/non-active');
+                        }
+                    }
+
                     if(type === 'monthly') {
                         document.title = 'Sales Report - Monthly View';
                         window.history.pushState("", "", '/sales/monthly');
@@ -429,25 +590,10 @@
                         window.history.pushState("", "", '/sales/executives');
                     }
 
-                    if(type === 'child_bo') {
-                        document.title = 'Contracts - Child BO';
-                        window.history.pushState("", "", '/contracts/bo/child');
-                    }
-
-                    if(type === 'inactive') {
-                        document.title = 'Contracts - Inactive';
-                        window.history.pushState("", "", '/contracts/inactive');
-                    }
-
                     if (type === 'sales') {
                         document.title = 'Compare Sales';
-                        window.history.pushState("", "", '/archives/sales');
+                        window.history.pushState("", "", '/archives/sale');
                     }
-
-                    if(type === 'inactive_child_bo') {
-                        document.title = "Contracts - Non-Active Child BO";
-                        window.history.pushState("", "", '/contracts/bo/child/non-active');
-                    }``
 
                     $('#main_content').fadeOut(500, () => {
                         $('#main_content').empty();
@@ -470,6 +616,7 @@
             }
 
             function onSuccess(result) {
+                manualToast.close();
                 archive_type = document.title = archive_type.substring(0, 1).toUpperCase() + archive_type.substring(1, archive_type.length);
 
                 Toast.fire({
@@ -499,6 +646,7 @@
             }
 
             function onSuccess(result) {
+                manualToast.close();
                 document.title = 'Sales Breakdown Id: ' + data_id;
                 window.history.pushState("", "", '/sales/show/breakdowns/' + data_id);
 
@@ -518,12 +666,6 @@
     });
 
     // more scripts
-    $(document).on('keypress', function(event) {
-        if(event.keyCode === 13) {
-            $(this).submit();
-        }
-    });
-
     // focus on the first input or select field.
     $(document).on('shown.bs.modal', function () {
         $(this).find('input[type="text"]').first().focus() ?
@@ -533,8 +675,6 @@
 
     $(document).on('change', '#sort_by', function () {
         let sort_by = $(this).val();
-
-        console.log(sort_by);
 
         if(!sort_by) {
             $('#month_row').attr('hidden', 'hidden');
@@ -786,6 +926,7 @@
             }
 
             function onSuccess(result) {
+                manualToast.close();
                 $('#main_content').fadeOut(500, () => {
                     $('#main_content').empty();
                     $('#main_content').fadeIn(500, () => {
@@ -897,12 +1038,15 @@
     // show/hide parent_bo field
     $(document).on('change', '#bo_type', function() {
         let select_parent_bo = $('#select_parent_bo');
+        let parent_bo = $('#parent_bo');
         let type = $(this).val();
 
         if(type == "child") {
             select_parent_bo.removeAttr('hidden');
+            parent_bo.removeAttr('disabled');
         } else {
             select_parent_bo.prop('hidden', 'hidden');
+            parent_bo.prop('disabled', 'disabled');
         }
     });
 
@@ -922,13 +1066,18 @@
             }
 
             function onSuccess(result) {
+                manualToast.close();
                 if(result.status === "non-existing") {
-                    $('#address, #contact_number').val('');
                     $('button[type="submit"]').removeAttr('disabled');
 
                     Toast.fire({
                         icon: 'success',
                         title: 'No existing agency with the name of ' + selector_value
+                    });
+
+                    $('.modal').on('hide.bs.modal', function() {
+                        $('#agency_name, #address, #contact_number').val('');
+                        $('button[type="submit"]').removeAttr('disabled');
                     });
                 } else {
                     Toast.fire({
@@ -962,13 +1111,18 @@
             }
 
             function onSuccess(result) {
+                manualToast.close();
                 if(result.status === "non-existing") {
-                    $('#advertiser_name').val('');
                     $('button[type="submit"]').removeAttr('disabled');
 
                     Toast.fire({
                         icon: 'success',
                         title: 'No existing advertiser with the name of ' + selector_value
+                    });
+
+                    $('.modal').on('hide.bs.modal', function() {
+                        $('#advertiser_name').val('');
+                        $('button[type="submit"]').removeAttr('disabled');
                     });
                 } else {
                     Toast.fire({
@@ -989,5 +1143,5 @@
                 }
             }
         }
-    })
+    });
 </script>

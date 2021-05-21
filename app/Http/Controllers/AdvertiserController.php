@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 class AdvertiserController extends Controller
 {
     public function index(Request $request) {
-        $advertisers = Advertiser::all();
+        $advertisers = Advertiser::orderBy('advertiser_name')->get();
 
         foreach ($advertisers as $advertiser) {
             if ($advertiser->is_active === 1) {
@@ -28,10 +28,20 @@ class AdvertiserController extends Controller
         }
 
         if($request->ajax()) {
+            if($request->has('select')) {
+                $option = "";
+
+                foreach ($advertisers as $advertiser) {
+                    $option .= "<option value='".$advertiser->advertiser_code."'>".$advertiser->advertiser_name."</option>";
+                }
+
+                return response()->json(['advertisers' => $option]);
+            }
+
             if($request->has('search')) {
                 $search_query = Advertiser::where('advertiser_name', '=', $request['value']);
 
-                if($search_query->count() == 1) {
+                if($search_query->count() >= 1) {
                     return $search_query->get()->first();
                 } else {
                     return response()->json(['status' => 'non-existing']);
@@ -79,7 +89,7 @@ class AdvertiserController extends Controller
             return response()->json(['status' => 'success', 'message' => 'An advertiser has been created!']);
         }
 
-        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()]);
+        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()],400);
     }
 
     public function update($id, Request $request) {
@@ -127,7 +137,7 @@ class AdvertiserController extends Controller
             return response()->json(['status' => 'success', 'message' => 'An advertiser has been updated!']);
         }
 
-        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()]);
+        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()],400);
     }
 
     public function delete($id) {

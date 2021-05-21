@@ -2,12 +2,8 @@
     <div class="row">
         <div class="col-md-12">
             <div class="btn-group fa-pull-left">
-                <a href="#" class="btn btn-outline-dark" data-action="switch" data-switch="inactive_child_bo" data-link="{{ route('contracts') }}" title="Switch to non-active child contracts"><i class="fas fa-exchange-alt"></i>  Inactive</a>
-                <a href="{{ route('contracts') }}" id="contracts" class="btn btn-outline-dark" navigation title="Switch to Parent BO"><i class="fas fa-folder"></i>  Normal</a>
-                <a href="#" class="btn btn-outline-dark" data-action="switch" data-switch="parent" data-link="{{ route('contracts') }}" title="Switch to Child BO"><i class="fas fa-folder-plus"></i>  Parent BO</a>
-            </div>
-            <div class="fa-pull-right btn-group">
-                <a href="#" class="btn btn-outline-dark" data-action='create' data-link='{{ route('contracts.create') }}'><i class="fas fa-plus"></i>  New Contract</a>
+                <a href="#" class="btn btn-outline-dark" data-action="switch" data-switch="inactive_child_bo" data-link="{{ route('sales') }}" title="Switch to non-active child contracts"><i class="fas fa-exchange-alt"></i>  Inactive</a>
+                <a href="#" class="btn btn-outline-dark" data-action="switch" data-switch="parent" data-link="{{ route('sales') }}" title="Switch to Parent BO"><i class="fas fa-folder-plus"></i>  Parent BO</a>
             </div>
         </div>
     </div>
@@ -22,10 +18,12 @@
                         <th>Contract Number</th>
                         <th>BO Number</th>
                         <th>Parent BO Number</th>
-                        <th>Station</th>
                         <th>Advertiser</th>
                         <th>Agency</th>
-                        <th>Print Status</th>
+                        <th>Total Amount</th>
+                        <th>Breakdown Amount</th>
+                        <th>Total Prod</th>
+                        <th>Breakdown Prod</th>
                         <th>Options</th>
                     </tr>
                     </thead>
@@ -103,7 +101,6 @@
         </div>
     </div>
 </div>
-
 
 <div class="modal fade" id="add-sales-breakdown-modal" tabindex="-1" role="dialog" aria-labelledby="add-sales-breakdown-modal" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -205,22 +202,25 @@
     // datatable
     contractsTable = $('#contractsTable').DataTable({
         ajax: {
-            url: '{{ route('contracts') }}',
+            url: '{{ route('sales') }}',
             dataSrc: '',
             data: {
                 "child_bo": true,
+                "contract_sales": true,
             },
         },
         columns: [
             { data: 'id' },
             { data: 'contract_number' },
-            { data: 'bo_number' },
-            { data: 'parent_bo' },
-            { data: 'station' },
+            { data: 'short_bo_number' },
+            { data: 'short_parent_bo' },
             { data: 'advertiser_name' },
             { data: 'agency_name' },
-            { data: 'print_status' },
-            { data: 'options' }
+            { data: 'total' },
+            { data: 'total_breakdown' },
+            { data: 'prod' },
+            { data: 'total_prod_breakdown' },
+            { data: 'options' },
         ],
         order: [
             [ 0, 'desc' ]

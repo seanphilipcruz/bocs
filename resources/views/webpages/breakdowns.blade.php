@@ -1,28 +1,20 @@
 <div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="fa-pull-left">
-                <a href="{{ route('sales') }}" id="sales" class="btn btn-outline-dark" navigation><i class="fas fa-arrow-left"></i>  Back</a>
-            </div>
-        </div>
-    </div>
     <div class="my-3"></div>
     <div class="justify-content-center">
         <div class="card d-none d-sm-none d-md-none d-lg-block d-xl-block">
             <div class="card-body">
-                <table id="salesBreakdownTable" class="table table-hover" style="width: 100%;">
+                <table id="salesTable" class="table table-hover" style="width: 100%;">
                     <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Contract Number</th>
-                        <th>BO Number</th>
-                        <th>Type</th>
-                        <th>Cash Type</th>
-                        <th>Amount</th>
-                        <th>Gross Amount</th>
-                        <th>Date Created</th>
-                        <th>Options</th>
-                    </tr>
+                        <tr>
+                            <th>Id</th>
+                            <th>Contract Number</th>
+                            <th>BO Number</th>
+                            <th>Station</th>
+                            <th>Agency</th>
+                            <th>Advertiser</th>
+                            <th>Account Executive</th>
+                            <th>Options</th>
+                        </tr>
                     </thead>
                     <tbody>
                     <tr id="tableBody">
@@ -45,16 +37,46 @@
     </div>
 </div>
 
-<div class="modal fade" id="update-sale-modal" tabindex="-1" role="dialog" aria-labelledby="update-sale-modal" aria-hidden="true">
+<!-- Modal -->
+<div class="modal fade" id="update-invoice-modal" tabindex="-1" role="dialog" aria-labelledby="update-invoice-modal" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Update Sale Breakdown</h5>
+                <h5 class="modal-title">Update Invoice Number</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="update-sales-form" data-form="Sales Breakdown" data-request="update" action="" method="POST">
+            <form id="update-invoice-form" data-form="Invoice" data-request="update" action="" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="invoice_no">Invoice Number</label>
+                        <input type="text" id="invoice_no" name="invoice_no" class="form-control" placeholder="Invoice Number">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-outline-dark">Save</button>
+                        <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="update-sale-modal" tabindex="-1" role="dialog" aria-labelledby="update-sales-modal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Sales</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="update-sales-form" data-form="Sales" data-request="update" action="" method="POST">
                 @csrf
                 @method('PUT')
                 <input type="hidden" id="package_cost">
@@ -148,32 +170,29 @@
     </div>
 </div>
 
-<script>
-    salesBreakdownTable = $('#salesBreakdownTable').DataTable({
+<script type="text/javascript">
+    // datatable
+    salesTable = $('#salesTable').DataTable({
         ajax: {
-            url: '{{ route('sales.show.breakdowns') }}',
+            url: '{{ route('sales') }}',
             dataSrc: '',
-            data: {
-                "bo_number": "{{ $bo_number }}"
-            }
         },
         columns: [
-            { data: 'date' },
-            { data: 'contract.contract_number' },
-            { data: 'contract.bo_number' },
-            { data: 'type' },
-            { data: 'amount_type' },
-            { data: 'amount' },
-            { data: 'gross_amount' },
-            { data: 'created_at' },
-            { data: 'options' },
+            { data: 'id' },
+            { data: 'contract_number' },
+            { data: 'bo_number' },
+            { data: 'station' },
+            { data: 'agency_name' },
+            { data: 'advertiser_name' },
+            { data: 'executive' },
+            { data: 'options' }
         ],
         order: [
             [ 0, 'desc' ]
         ]
     });
 
-    $(document).on('submit', '#update-sales-forms', function(event) {
+    $(document).on('submit', '#update-sales-form, #update-invoice-form', function(event) {
         event.preventDefault();
         let url = $(this).attr('action');
         let formData = new FormData(this);

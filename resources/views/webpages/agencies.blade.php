@@ -189,6 +189,10 @@
         ]
     });
 
+    setInterval(() => {
+        agenciesTable.ajax.reload(null, false);
+    }, 3000);
+
     // form processing
     $(document).on('submit', '#add-agency-form, #update-agency-form, #delete-agency-form', function(event) {
         event.preventDefault();

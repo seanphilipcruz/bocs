@@ -2,9 +2,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="btn-group fa-pull-left">
-                <a href="#" class="btn btn-outline-dark" data-action="switch" data-switch="inactive_child_bo" data-link="{{ route('contracts') }}" title="Switch to non-active child contracts"><i class="fas fa-exchange-alt"></i>  Inactive</a>
-                <a href="{{ route('contracts') }}" id="contracts" class="btn btn-outline-dark" navigation title="Switch to Parent BO"><i class="fas fa-folder"></i>  Normal</a>
-                <a href="#" class="btn btn-outline-dark" data-action="switch" data-switch="parent" data-link="{{ route('contracts') }}" title="Switch to Child BO"><i class="fas fa-folder-plus"></i>  Parent BO</a>
+                <a href="#" class="btn btn-outline-dark" data-action="switch" data-switch="parent" data-link="{{ route('contracts') }}" title="Switch to Active Parent BO"><i class="fas fa-exchange-alt"></i>  Active</a>
             </div>
             <div class="fa-pull-right btn-group">
                 <a href="#" class="btn btn-outline-dark" data-action='create' data-link='{{ route('contracts.create') }}'><i class="fas fa-plus"></i>  New Contract</a>
@@ -21,7 +19,6 @@
                         <th>Id</th>
                         <th>Contract Number</th>
                         <th>BO Number</th>
-                        <th>Parent BO Number</th>
                         <th>Station</th>
                         <th>Advertiser</th>
                         <th>Agency</th>
@@ -208,14 +205,13 @@
             url: '{{ route('contracts') }}',
             dataSrc: '',
             data: {
-                "child_bo": true,
+                "inactive_parent": true,
             },
         },
         columns: [
             { data: 'id' },
             { data: 'contract_number' },
             { data: 'bo_number' },
-            { data: 'parent_bo' },
             { data: 'station' },
             { data: 'advertiser_name' },
             { data: 'agency_name' },

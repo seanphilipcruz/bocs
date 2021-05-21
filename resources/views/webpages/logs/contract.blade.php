@@ -25,13 +25,6 @@
                             <td>{{ $contracts->created_at }}</td>
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="5">
-                                <div class="alert alert-danger m-0 text-center">
-                                    No Data Found
-                                </div>
-                            </td>
-                        </tr>
                     @endforelse
                     </tbody>
                 </table>

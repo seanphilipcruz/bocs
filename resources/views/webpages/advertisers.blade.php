@@ -151,6 +151,10 @@
         ]
     });
 
+    setInterval(() => {
+        advertisersTable.ajax.reload(null, false);
+    }, 3000);
+
     // form processes
     $(document).on('submit', '#add-advertiser-form ,#update-advertiser-form, #delete-advertiser-form', function(event) {
         event.preventDefault();

@@ -601,8 +601,26 @@
 </div>
 
 <script>
+    // for agency / advertiser select
+    function fetchLatest(url, data) {
+        getAsync(url, data, 'JSON', beforeSend, onSuccess);
+
+        function beforeSend() {
+
+        }
+
+        function onSuccess(result) {
+            if(url.includes('agencies')) {
+                $('#agency_id').append(result.agencies);
+            } else {
+                $('#advertiser_id').append(result.advertisers);
+            }
+        }
+    }
+
     $(document).on('submit', '#add-agency-form, #add-advertiser-form', function(event) {
         event.preventDefault();
+        let type = $(this).attr('id')
         let url = $(this).attr('action');
         let formData = new FormData(this);
 
@@ -616,13 +634,18 @@
         }
 
         function onSuccess(result) {
-            console.log(result);
             $('.modal').modal('hide');
 
             Toast.fire({
                 icon: result.status,
                 title: result.message,
             });
+
+            if(type.includes('agency')) {
+                fetchLatest('{{ route('agencies') }}', { "select": "select" });
+            } else {
+                fetchLatest('{{ route('advertisers') }}', { "select": "select" });
+            }
         }
     });
 </script>

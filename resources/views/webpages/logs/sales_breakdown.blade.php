@@ -8,8 +8,8 @@
                     <tr>
                         <th>Sales Id</th>
                         <th>Action Taken</th>
-                        <th>Employee Number</th>
-                        <th>Date Updated</th>
+                        <th>Employee</th>
+                        <th>Date Taken</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -21,13 +21,6 @@
                                 <td>{{ $sales->created_at }}</td>
                             </tr>
                         @empty
-                            <tr id="tableBody">
-                                <td colspan="9">
-                                    <div class="alert alert-danger m-0 text-center">
-                                        No Data Found
-                                    </div>
-                                </td>
-                            </tr>
                         @endforelse
                     </tbody>
                 </table>

@@ -3,6 +3,7 @@
         <div class="col-md-12">
             <div class="btn-group fa-pull-left">
                 <a href="#" class="btn btn-outline-dark" data-action="switch" data-switch="inactive" data-link="{{ route('contracts') }}" title="Switch to non-active contracts"><i class="fas fa-exchange-alt"></i>  Inactive</a>
+                <a href="#" class="btn btn-outline-dark" data-action="switch" data-switch="parent" data-link="{{ route('contracts') }}" title="Switch to Parent BO"><i class="fas fa-folder-plus"></i>  Parent BO</a>
                 <a href="#" class="btn btn-outline-dark" data-action="switch" data-switch="child_bo" data-link="{{ route('contracts') }}" title="Switch to Child BO"><i class="fas fa-folder-minus"></i>  Child BO</a>
             </div>
             <div class="fa-pull-right btn-group">
@@ -23,6 +24,7 @@
                         <th>Station</th>
                         <th>Advertiser</th>
                         <th>Agency</th>
+                        <th>Executive</th>
                         <th>Print Status</th>
                         <th>Options</th>
                     </tr>
@@ -121,6 +123,11 @@
                 <input type="hidden" id="prod_cost_vat">
                 <input type="hidden" id="prod_cost_salesdc">
                 <input type="hidden" id="bo_number" name="bo_number">
+                <input type="hidden" id="contract_id" name="contract_id">
+                <input type="hidden" id="bo_type" name="bo_type">
+                <input type="hidden" id="agency_id" name="agency_id">
+                <input type="hidden" id="advertiser_id" name="advertiser_id">
+                <input type="hidden" id="employee_id" name="ae">
                 <div class="modal-body">
                     <div class="mb-3">Broadcast Order Number: <span id="bo_number_text" class="text-primary">undefined</span></div>
                     <div class="form-group">
@@ -208,17 +215,27 @@
         },
         columns: [
             { data: 'id' },
-            { data: 'contract_number' },
-            { data: 'bo_number' },
+            { data: 'short_contract_number' },
+            { data: 'short_bo_number' },
             { data: 'station' },
             { data: 'advertiser_name' },
             { data: 'agency_name' },
+            { data: 'employee_name' },
             { data: 'print_status' },
             { data: 'options' }
         ],
         order: [
             [ 0, 'desc']
         ]
+    });
+
+    setInterval(() => {
+        contractsTable.ajax.reload(null, false);
+    }, 3000);
+
+    $('#add-sales-breakdown-modal').on('hide.bs.modal', function() {
+        $('select').prop('selectedIndex', 0);
+        $('#sale_amount, #sale_gross_amount').val('');
     });
 
     $(document).on('submit', '#add-sales-breakdown-form', function(event) {
@@ -233,18 +250,19 @@
         function beforeSend() {
             manualToast.fire({
                 icon: 'info',
-                message: 'Please wait ...'
+                title: 'Please wait ...'
             });
         }
 
         function onSuccess(result) {
-            $('#sale_amount, #sale_gross_amount').val('');
             contractsTable.ajax.reload(null, false);
             $('.modal').modal('hide');
+            $('select').prop('selectedIndex', 0);
+            $('#sale_amount, #sale_gross_amount').val('');
 
             Toast.fire({
                 icon: result.status,
-                message: "A new " +formType+ " has been saved!",
+                title: "A new " +formType+ " has been saved!",
             });
         }
     });
@@ -259,7 +277,7 @@
         function beforeSend() {
             manualToast.fire({
                 icon: 'info',
-                message: 'Please wait ...'
+                title: 'Please wait ...'
             });
         }
 
@@ -269,7 +287,7 @@
 
             Toast.fire({
                 icon: result.status,
-                message: result.message
+                title: result.message
             });
         }
     })

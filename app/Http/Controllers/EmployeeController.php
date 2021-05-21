@@ -77,7 +77,7 @@ class EmployeeController extends Controller
             return response()->json(['status' => 'success', 'message' => 'An employee has been created!']);
         }
 
-        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()]);
+        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()],400);
     }
 
     public function update($id, Request $request): JsonResponse {
@@ -99,7 +99,7 @@ class EmployeeController extends Controller
             return response()->json(['status' => 'success', 'message' => 'An employee\'s information has been updated!']);
         }
 
-        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()]);
+        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()],400);
     }
 
     public function delete($id): JsonResponse {
@@ -149,7 +149,7 @@ class EmployeeController extends Controller
             }
         }
 
-        return response()->json(['status' => 'error', 'message' => $validation->errors()->all()]);
+        return response()->json(['status' => 'error', 'message' => $validation->errors()->all()],400);
     }
 
 
@@ -186,7 +186,7 @@ class EmployeeController extends Controller
             return response()->json(['status' => 'success', 'message' => 'Request has been sent, you will be notified via Email.']);
         }
 
-        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()]);
+        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()],400);
     }
 
     private function Log($action, $employee_id, $user_id) {

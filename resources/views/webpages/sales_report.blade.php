@@ -222,10 +222,14 @@
 </div>
 
 <script>
-    $('#salesReportTable').DataTable({
+    srTable = $('#salesReportTable').DataTable({
         order: [
             [ 0, 'desc' ],
             [ 1, 'desc' ]
         ]
     });
+
+    setInterval(() => {
+        srTable.ajax.reload(null, false);
+    }, 3000);
 </script>

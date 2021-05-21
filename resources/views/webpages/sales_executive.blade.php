@@ -47,10 +47,14 @@
 </div>
 
 <script>
-    $('#monthlySalesReportTable').DataTable({
+    executiveSR = $('#monthlySalesReportTable').DataTable({
         order: [
             [ 0, 'desc' ],
             [ 1, 'desc']
         ]
     });
+
+    setInterval(() => {
+        executiveSR.ajax.reload(null, false);
+    }, 3000);
 </script>

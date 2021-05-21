@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Validator;
 class AgencyController extends Controller
 {
     public function index(Request $request) {
-        $agencies = Agency::all();
+        $agencies = Agency::orderBy('agency_name')->get();
 
         foreach ($agencies as $agency) {
             if ($agency->is_active === 1) {
@@ -49,10 +49,20 @@ class AgencyController extends Controller
         }
 
         if($request->ajax()) {
+            if($request->has('select')) {
+                $option = "";
+
+                foreach($agencies as $agency) {
+                    $option .= "<option value='".$agency->agency_code."'>".$agency->agency_name."</option>";
+                }
+
+                return response()->json(['agencies' => $option]);
+            }
+
             if($request->has('search')) {
                 $search_query = Agency::where('agency_name', '=', $request['value']);
 
-                if($search_query->count() == 1) {
+                if($search_query->count() >= 1) {
                     return $search_query->get()->first();
                 } else {
                     return response()->json(['status' => 'non-existing']);
@@ -114,7 +124,7 @@ class AgencyController extends Controller
             return response()->json(['status' => 'success', 'message' => 'An agency has been created!']);
         }
 
-        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()]);
+        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()],400);
     }
 
     public function update($id, Request $request) {
@@ -207,7 +217,7 @@ class AgencyController extends Controller
             return response()->json(['status' => 'success', 'message' => 'An agency has been updated!']);
         }
 
-        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()]);
+        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()],400);
     }
 
     public function delete($id) {

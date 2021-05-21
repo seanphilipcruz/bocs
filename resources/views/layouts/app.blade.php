@@ -76,8 +76,13 @@
                                 <li class="nav-item">
                                     <a href="{{ route('contracts') }}" id="contracts" class="nav-link" navigation>{{ __('Contracts') }}</a>
                                 </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('sales') }}" id="sales" class="nav-link" navigation>{{ __('Sales') }}</a>
+                                <li class="nav-item dropdown">
+                                    <a id="salesDropdown" href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>{{ __('Sales') }}</a>
+
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="salesDropdown">
+                                        <a href="{{ route('sales') }}" id="sales" class="dropdown-item" navigation>{{ __('Sales') }}</a>
+                                        <a href="{{ route('sales') }}" id="breakdowns" class="dropdown-item" navigation>{{ __('Breakdowns') }}</a>
+                                    </div>
                                 </li>
                             @elseif(auth()->user()->Job->level === "3")
                                 <li class="nav-item">
@@ -124,6 +129,7 @@
 
                                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="salesDropdown">
                                         <a href="{{ route('sales') }}" id="sales" class="dropdown-item" navigation>{{ __('Sales') }}</a>
+                                        <a href="{{ route('sales') }}" id="breakdowns" class="dropdown-item" navigation>{{ __('Breakdowns') }}</a>
                                         <a href="{{ route('sales.reports') }}" id="sales_report" class="dropdown-item" navigation>{{ __('Reports') }}</a>
                                         <a href="{{ route('logs') }}" class="dropdown-item" id="sales_logs" navigation>{{ __('Logs') }}</a>
                                     </div>

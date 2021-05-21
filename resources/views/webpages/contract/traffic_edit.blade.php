@@ -14,8 +14,22 @@
     </div>
     <div class="my-3"></div>
     <div class="row">
-        <div class="col">
-            <div class="lead mb-0"><small class="text-danger">via</small>  {{ $contract->Employee->first_name }} {{ $contract->Employee->last_name }}</div>
+        <div class="col-12">
+            <div class="form-group">
+                <label for="executive">Account Executive</label>
+                <select id="executive" name="ae" class="custom-select">
+                    <option value="{{ $contract->Employee->id }}">{{ $contract->Employee->first_name }} {{ $contract->Employee->last_name }}</option>
+                    @forelse($executives as $ae)
+                        <option value="{{ $ae->id }}">{{ $ae->first_name }} {{ $ae->last_name }}</option>
+                    @empty
+                        <option value="{{ $contract->Employee->id }}">{{ $contract->Employee->first_name }} {{ $contract->Employee->last_name }}</option>
+                    @endforelse
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="contract_number">Contract Number</label>
+                <input type="text" id="contract_number" name="contract_number" class="form-control" placeholder="{{ $contract['contract_number'] }}" value="{{ $contract['contract_number'] }}">
+            </div>
         </div>
     </div>
     <div class="my-1"></div>
@@ -214,30 +228,30 @@
                     @endif
 
                     @if(count($contract['station']) === 0)
-                            <div class="col">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" value="DWRX Manila;" name="station[]" id="Manila">
-                                    <label class="form-check-label" for="Manila">
-                                        Manila
-                                    </label>
-                                </div>
+                        <div class="col">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" value="DWRX Manila;" name="station[]" id="Manila">
+                                <label class="form-check-label" for="Manila">
+                                    Manila
+                                </label>
                             </div>
-                            <div class="col">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" value="DYBT Cebu;" name="station[]" id="Cebu">
-                                    <label class="form-check-label" for="Cebu">
-                                        Cebu
-                                    </label>
-                                </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" value="DYBT Cebu;" name="station[]" id="Cebu">
+                                <label class="form-check-label" for="Cebu">
+                                    Cebu
+                                </label>
                             </div>
-                            <div class="col">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" value="DXBT Davao;" name="station[]" id="Davao">
-                                    <label class="form-check-label" for="Davao">
-                                        Davao
-                                    </label>
-                                </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" value="DXBT Davao;" name="station[]" id="Davao">
+                                <label class="form-check-label" for="Davao">
+                                    Davao
+                                </label>
                             </div>
+                        </div>
                     @endif
                 </div>
             </div>

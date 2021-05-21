@@ -288,6 +288,10 @@
         ]
     });
 
+    setInterval(() => {
+        employeesTable.ajax.reload(null, false);
+    }, 3000);
+
     // form processing
     $(document).on('submit', '#new-employee-form, #update-employee-form, #delete-employee-form, #change-password-form', function(event) {
         event.preventDefault();

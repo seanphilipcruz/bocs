@@ -227,6 +227,10 @@
         ],
     });
 
+    setInterval(() => {
+        jobsTable.ajax.reload(null, false);
+    }, 3000);
+
     $(document).on('submit', '#add-job-form, #update-job-form, #delete-job-form', function(event) {
         event.preventDefault();
         let url = $(this).attr('action');

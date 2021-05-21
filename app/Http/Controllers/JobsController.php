@@ -76,7 +76,7 @@ class JobsController extends Controller
             return response()->json(['status' => 'success', 'message' => 'A new job description has been created!']);
         }
 
-        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()]);
+        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()],400);
     }
 
     public function update($id, Request $request) {
@@ -104,7 +104,7 @@ class JobsController extends Controller
             return response()->json(['status' => 'success', 'message' => $job->job_description . ' has been updated!']);
         }
 
-        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()]);
+        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()],400);
     }
 
     public function delete($id) {

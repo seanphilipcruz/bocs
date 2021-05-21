@@ -7,11 +7,13 @@ use App\Advertiser;
 use App\Agency;
 use App\Contract;
 use App\ContractRevision;
+use App\Employee;
 use Auth;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Str;
 
 class ContractController extends Controller
 {
@@ -20,32 +22,102 @@ class ContractController extends Controller
         $user_level = Auth::user()->Job->level;
 
         if($user_level === "2") {
-            $contracts = Contract::with('Agency', 'Advertiser', 'Employee')->where('bo_type', '=', 'normal')->where('is_active', '=', '1')->where('ae', '=', $executive)->orderBy('created_at')->get();
+            $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                ->where('bo_type', '=', 'normal')
+                ->where('is_active', '=', '1')
+                ->where('ae', '=', $executive)
+                ->orderBy('created_at')
+                ->get();
+
+            if($request['inactive']) {
+                $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'normal')
+                    ->where('is_active', '=', '0')
+                    ->where('ae', '=', $executive)
+                    ->orderBy('created_at')
+                    ->get();
+            }
+
+            if($request['parent']) {
+                $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'parent')
+                    ->where('is_active', '=', '1')
+                    ->where('ae', '=', $executive)
+                    ->orderBy('created_at')
+                    ->get();
+            }
+
+            if($request['inactive_parent']) {
+                $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'parent')
+                    ->where('is_active', '=', '0')
+                    ->where('ae', '=', $executive)
+                    ->orderBy('created_at')
+                    ->get();
+            }
 
             if($request['child_bo']) {
-                $contracts = Contract::with('Agency', 'Advertiser', 'Employee')->where('bo_type', '=', 'child')->where('is_active', '=', '1')->where('ae', '=', $executive)->orderBy('created_at')->get();
+                $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'child')
+                    ->where('is_active', '=', '1')
+                    ->where('ae', '=', $executive)
+                    ->orderBy('created_at')
+                    ->get();
             }
 
             if($request['inactive_child_bo']) {
-                $contracts = Contract::with('Agency', 'Advertiser', 'Employee')->where('bo_type', '=', 'child')->where('is_active', '=', '0')->where('ae', '=', $executive)->orderBy('created_at')->get();
-            }
-
-            if($request['inactive']) {
-                $contracts = Contract::with('Agency', 'Advertiser', 'Employee')->where('bo_type', '=', 'normal')->where('is_active', '=', '0')->where('ae', '=', $executive)->orderBy('created_at')->get();
+                $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'child')
+                    ->where('is_active', '=', '0')
+                    ->where('ae', '=', $executive)
+                    ->orderBy('created_at')
+                    ->get();
             }
         } else {
-            $contracts = Contract::with('Agency', 'Advertiser', 'Employee')->where('bo_type', '=', 'normal')->where('is_active', '=', '1')->orderBy('created_at')->get();
+            $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                ->where('bo_type', '=', 'normal')
+                ->where('is_active', '=', '1')
+                ->orderBy('created_at')
+                ->get();
+
+            if($request['inactive']) {
+                $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'normal')
+                    ->where('is_active', '=', '0')
+                    ->orderBy('created_at')
+                    ->get();
+            }
+
+            if($request['parent']) {
+                $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'parent')
+                    ->where('is_active', '=', '1')
+                    ->orderBy('created_at')
+                    ->get();
+            }
+
+            if($request['inactive_parent']) {
+                $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'parent')
+                    ->where('is_active', '=', '0')
+                    ->orderBy('created_at')
+                    ->get();
+            }
 
             if($request['child_bo']) {
-                $contracts = Contract::with('Agency', 'Advertiser', 'Employee')->where('bo_type', '=', 'child')->where('is_active', '=', '1')->orderBy('created_at')->get();
+                $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'child')
+                    ->where('is_active', '=', '1')
+                    ->orderBy('created_at')
+                    ->get();
             }
 
             if($request['inactive_child_bo']) {
-                $contracts = Contract::with('Agency', 'Advertiser', 'Employee')->where('bo_type', '=', 'child')->where('is_active', '=', '0')->orderBy('created_at')->get();
-            }
-
-            if($request['inactive']) {
-                $contracts = Contract::with('Agency', 'Advertiser', 'Employee')->where('bo_type', '=', 'normal')->where('is_active', '=', '0')->orderBy('created_at')->get();
+                $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'child')
+                    ->where('is_active', '=', '0')
+                    ->orderBy('created_at')
+                    ->get();
             }
         }
 
@@ -92,6 +164,12 @@ class ContractController extends Controller
                 $contract->agency_name = $contract->Agency->agency_name;
             }
 
+            $contract->short_contract_number = Str::limit($contract->contract_number, '20');
+
+            $contract->short_bo_number = Str::limit($contract->bo_number, '15');
+
+            $contract->employee_name = $contract->Employee->first_name[0] . $contract->Employee->middle_name[0] . $contract->Employee->last_name[0];
+
             if ($contract->is_active === 1) {
                 $contract->status = "<div class='badge badge-success text-center'>Active</div>";
 
@@ -99,7 +177,6 @@ class ContractController extends Controller
                     $contract->options = "" .
                         "<div class='btn-group'>" .
                         "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark'><i class='fas fa-download'></i></a>" .
-                        "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-plus'></i></a>" .
                         "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Reactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-check'></i></a>" .
                         "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
                         "</div>";
@@ -162,8 +239,12 @@ class ContractController extends Controller
         if($request->ajax()) {
             $switchTo = $request['switch'];
 
-            if($switchTo == "inactive") {
-                return view('webpages.contract.inactive');
+            if($switchTo == "parent") {
+                return view('webpages.contract.bo.parent.active');
+            }
+
+            if($switchTo === "inactive_parent") {
+                return view('webpages.contract.bo.parent.inactive');
             }
 
             if($switchTo == "child_bo") {
@@ -172,6 +253,10 @@ class ContractController extends Controller
 
             if($switchTo === "inactive_child_bo") {
                 return view('webpages.contract.bo.child.inactive');
+            }
+
+            if($switchTo == "inactive") {
+                return view('webpages.contract.inactive');
             }
 
             if($request->has('navigation')) {
@@ -201,6 +286,8 @@ class ContractController extends Controller
         $user_level = Auth::user()->Job->level;
 
         $contract = Contract::with('Employee')->findOrFail($request['id']);
+
+        $executives = Employee::where('job_id', '=', 2)->where('is_active', '=', 1)->get();
 
         $parents = Contract::where('bo_number', '!=', $contract['bo_number'])->where('bo_type', '=', 'normal')->orderBy('bo_number')->get()->pluck('bo_number');
 
@@ -239,6 +326,10 @@ class ContractController extends Controller
             if($request['modal'] === true || $request['modal'] === 'true') {
                 return response()->json(['contract' => $contract]);
             }
+        }
+
+        if($user_level === "1") {
+            return view('webpages.contract.traffic_edit', compact('contract', 'executives', 'agencies', 'advertisers', 'parents'));
         }
 
         if($user_level === "3") {
@@ -315,7 +406,7 @@ class ContractController extends Controller
             return response()->json(['status' => 'success', 'message' => 'A contract has been successfully added!']);
         }
 
-        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()]);
+        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()],400);
     }
 
     public function update($id, Request $request) {

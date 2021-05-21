@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Advertiser;
 use App\Agency;
+use App\Contract;
 use App\Employee;
 use App\Sales;
 use App\SalesLogs;
@@ -23,81 +24,246 @@ class SalesController extends Controller
         $user_level = Auth::user()->Job->level;
 
         if($user_level === "2") {
-            $sales = Sales::with('Contract.Agency', 'Contract.Advertiser', 'Contract.Employee')->where('ae', '=', $executive)->get();
+            $contracts = Contract::has('Sales')
+                ->with('Sales', 'Agency', 'Advertiser', 'Employee')
+                ->where('ae', '=', $executive)
+                ->where('is_active', '=', '1')
+                ->orderBy('created_at')
+                ->get();
+
+            if($request['inactive']) {
+                $contracts = Contract::has('Sales')
+                    ->with('Sales', 'Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'normal')
+                    ->orWhere('bo_type', '=', 'parent')
+                    ->where('is_active', '=', '0')
+                    ->where('ae', '=', $executive)
+                    ->orderBy('created_at')
+                    ->get();
+            }
+
+            if($request['parent']) {
+                $contracts = Contract::has('Sales')
+                    ->with('Sales', 'Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'parent')
+                    ->where('ae', '=', $executive)
+                    ->where('is_active', '=', '1')
+                    ->orderBy('created_at')
+                    ->get();
+            }
+
+            if($request['inactive_parent']) {
+                $contracts = Contract::has('Sales')
+                    ->with('Sales', 'Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'parent')
+                    ->where('ae', '=', $executive)
+                    ->where('is_active', '=', '0')
+                    ->orderBy('created_at')
+                    ->get();
+            }
+
+            if($request['child_bo']) {
+                $contracts = Contract::has('Sales')
+                    ->with('Sales', 'Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'child')
+                    ->where('is_active', '=', '1')
+                    ->where('ae', '=', $executive)
+                    ->orderBy('created_at')
+                    ->get();
+            }
+
+            if($request['inactive_child_bo']) {
+                $contracts = Contract::has('Sales')
+                    ->with('Sales', 'Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'child')
+                    ->where('is_active', '=', '0')
+                    ->where('ae', '=', $executive)
+                    ->orderBy('created_at')
+                    ->get();
+            }
         } else {
-            $sales = Sales::with('Contract.Agency', 'Contract.Advertiser', 'Contract.Employee')->get();
+            $contracts = Contract::has('Sales')
+                ->with('Sales', 'Agency', 'Advertiser', 'Employee')
+                ->where('bo_type', '=', 'normal')
+                ->where('is_active', '=', '1')
+                ->get();
+
+            if($request['inactive']) {
+                $contracts = Contract::has('Sales')
+                    ->with('Sales', 'Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'normal')
+                    ->orWhere('bo_type', '=', 'parent')
+                    ->where('is_active', '=', '0')
+                    ->orderBy('created_at')
+                    ->get();
+            }
+
+            if($request['parent']) {
+                $contracts = Contract::has('Sales')
+                    ->with('Sales', 'Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'parent')
+                    ->where('is_active', '=', '1')
+                    ->orderBy('created_at')
+                    ->get();
+            }
+
+            if($request['inactive_parent']) {
+                $contracts = Contract::has('Sales')
+                    ->with('Sales', 'Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'parent')
+                    ->where('is_active', '=', '0')
+                    ->orderBy('created_at')
+                    ->get();
+            }
+
+            if($request['child_bo']) {
+                $contracts = Contract::has('Sales')
+                    ->with('Sales', 'Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'child')
+                    ->where('is_active', '=', '1')
+                    ->orderBy('created_at')
+                    ->get();
+            }
+
+            if($request['inactive_child_bo']) {
+                $contracts = Contract::has('Sales')
+                    ->with('Sales', 'Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'child')
+                    ->where('is_active', '=', '0')
+                    ->orderBy('created_at')
+                    ->get();
+            }
         }
 
-        foreach ($sales as $sale) {
-            $sale->date = $sale['year'] . " " . $sale['month'];
+        foreach ($contracts as $contract) {
 
-            $sale->bo_number = Str::limit($sale->bo_number, '25', '...');
-
-            $sale->executive = $sale->Contract->Employee->first_name[0] . $sale->Contract->Employee->middle_name[0] . $sale->Contract->Employee->last_name[0];
-
-            if($sale['type'] == 'airtime' || $sale['type'] == 'totalamount') {
-                $sale['type'] = 'Air Time';
-            }
-
-            if($sale['type'] == 'top10') {
-                $sale['type'] = 'Top 10 Sponsorship';
-            }
-
-            if($sale['type'] == 'live') {
-                $sale['type'] = 'Live Guesting/Interview';
-            }
-
-            if($sale['type'] == 'DJDisc') {
-                $sale['type'] = 'DJ Discussion';
-            }
-
-            if($sale['type'] == 'Spots' || $sale['type'] == 'spots') {
-                $sale['type'] = 'Spots';
-            }
-
-            if($sale['type'] == 'totalprod') {
-                $sale['type'] = 'Production';
-            }
-
-            if($sale->Contract->agency_id === 0) {
-                $sale->Contract->agency_name = "<p class='badge badge-danger text-center'>undefined</p>";
+            // catching the advertiser / agency that has no value
+            if($contract->advertiser_id === 0) {
+                $contract->advertiser_name = '<div class="badge badge-danger text-center">Undefined</div>';
             } else {
-                $sale->Contract->agency_name = $sale->Contract->Agency->agency_name;
+                $contract->advertiser_name = $contract->Advertiser->advertiser_name;
             }
 
-            if($sale->Contract->advertiser_id === 0) {
-                $sale->Contract->advertiser_name = "<p class='badge badge-danger text-center'>undefined</p>";
+            if($contract->agency_id === 0) {
+                $contract->agency_name = '<div class="badge badge-danger text-center">Undefined</div>';
             } else {
-                $sale->Contract->advertiser_name = $sale->Contract->Advertiser->advertiser_name;
+                $contract->agency_name = $contract->Agency->agency_name;
             }
 
-            if($user_level === "2") {
-                $sale->options = "" .
-                    "<div class='btn-group'>" .
-                    "   <a href='#' data-action='breakdown' data-link='".route('sales.show.breakdowns')."' data-id='".$sale->bo_number."' modal='true' tooltip title='View Breakdowns' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-list-ul'></i></a>" .
-                    "   <a href='#update-invoice-modal' data-action='open' data-link='".route('sales.show')."' data-id='".$sale->id."' modal='true' tooltip title='Invoice Number' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
-                    "</div>";
-            } else if($user_level === "3") {
-                $sale->options = "" .
-                    "<div class='btn-group'>" .
-                    "   <a href='#update-invoice-modal' data-action='open' data-link='".route('sales.show')."' data-id='".$sale->id."' modal='true' tooltip title='Invoice Number' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
-                    "</div>";
-            }
+            $contract->executive = $contract->Employee->first_name[0] . $contract->Employee->middle_name[0] . $contract->Employee->last_name[0];
 
-            $sale->options = "" .
-                "<div class='btn-group'>" .
-                "   <a href='#' data-action='breakdown' data-link='".route('sales.show.breakdowns')."' data-id='".$sale->bo_number."' modal='true' tooltip title='View Breakdowns' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-list-ul'></i></a>" .
-                "   <a href='#update-invoice-modal' data-action='open' data-link='".route('sales.show')."' data-id='".$sale->id."' modal='true' tooltip title='Invoice Number' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
-                "   <a href='#update-sale-modal' data-action='open' data-link='".route('sales.show')."' data-id='".$sale->id."' modal='true' tooltip title='View Sale' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
-                "</div>";
+            foreach ($contract->Sales as $sale) {
+                // getting the breakdown of the contracts
+                $contract->breakdown_amount = array_sum($sale->where('contract_id', $contract->id)->pluck('gross_amount')->toArray());
+                $contract->breakdown_prod = array_sum($sale->where('contract_id', $contract->id)->where('type', '=', 'totalprod')->pluck('gross_amount')->toArray());
+
+                // displaying the total amount in the tables
+                if($contract->total_amount == $contract->breakdown_amount) {
+                    $contract->total = "<div class='badge badge-success'>".number_format($contract->total_amount,2)."</div>";
+                    $contract->total_breakdown = "<div class='badge badge-success'>".number_format(array_sum($sale->where('contract_id', $contract->id)->pluck('gross_amount')->toArray()),2)."</div>";
+                } else {
+                    $contract->total = "<div class='badge badge-info'>".number_format($contract->total_amount,2)."</div>";
+                    $contract->total_breakdown = "<div class='badge badge-danger'>".number_format(array_sum($sale->where('contract_id', $contract->id)->pluck('gross_amount')->toArray()),2)."</div>";
+                }
+
+                // displaying the total prod
+                if($contract->total_prod == $contract->breakdown_prod) {
+                    $contract->prod = "<div class='badge badge-success'>".number_format($contract->total_prod,2)."</div>";
+                    $contract->total_prod_breakdown = "<div class='badge badge-success'>".number_format(array_sum($sale->where('contract_id', $contract->id)->where('type', '=', 'totalprod')->pluck('gross_amount')->toArray()),2)."</div>";
+                } else {
+                    $contract->prod = "<div class='badge badge-primary'>".number_format($contract->total_prod,2)."</div>";
+                    $contract->total_prod_breakdown = "<div class='badge badge-danger'>".number_format(array_sum($sale->where('contract_id', $contract->id)->where('type', '=', 'totalprod')->pluck('gross_amount')->toArray()),2)."</div>";
+                }
+
+                $contract->short_bo_number = Str::limit($contract->bo_number, '20');
+
+                $contract->short_parent_bo = Str::limit($contract->parent_bo, '15');
+
+                if($sale->type == 'airtime' || $sale->type == 'totalamount') {
+                    $sale->type = 'Air Time';
+                }
+
+                if($sale->type == 'top10') {
+                    $sale->type = 'Top 10 Sponsorship';
+                }
+
+                if($sale->type == 'live') {
+                    $sale->type = 'Live Guesting/Interview';
+                }
+
+                if($sale->type == 'DJDisc') {
+                    $sale->type = 'DJ Discussion';
+                }
+
+                if($sale->type == 'Spots' || $sale->type == 'spots') {
+                    $sale->type = 'Spots';
+                }
+
+                if($sale->type == 'totalprod') {
+                    $sale->type = 'Production';
+                }
+
+                if($user_level === "2") {
+                    $contract->options = "" .
+                        "<div class='btn-group'>" .
+                        "   <a href='#update-sale-modal' data-action='open' data-link='".route('sales.show')."' data-id='".$sale->id."' modal='true' tooltip title='View Sale' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                        "   <a href='#update-invoice-modal' data-action='open' data-link='".route('sales.show')."' data-id='".$sale->id."' modal='true' tooltip title='Invoice Number' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
+                        "</div>";
+                } else if($user_level === "3") {
+                    $contract->options = "" .
+                        "<div class='btn-group'>" .
+                        "   <a href='#update-invoice-modal' data-action='open' data-link='".route('sales.show')."' data-id='".$sale->id."' modal='true' tooltip title='Invoice Number' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
+                        "</div>";
+                }
+
+                if($request['contract_sales']) {
+                    $contract->options = "" .
+                        "<div class='btn-group'>" .
+                        "   <a href='#' data-action='breakdown' data-link='".route('sales.show.breakdowns')."' data-id='".$sale->bo_number."' modal='true' tooltip title='View Breakdowns' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-list-ul'></i></a>" .
+                        "   <a href='#update-invoice-modal' data-action='open' data-link='".route('sales.show')."' data-id='".$sale->id."' modal='true' tooltip title='Invoice Number' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
+                        "</div>";
+                } else {
+                    $contract->options = "" .
+                        "<div class='btn-group'>" .
+                        "   <a href='#update-sale-modal' data-action='open' data-link='".route('sales.show')."' data-id='".$sale->id."' modal='true' tooltip title='View Sale' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                        "   <a href='#update-invoice-modal' data-action='open' data-link='".route('sales.show')."' data-id='".$sale->id."' modal='true' tooltip title='Invoice Number' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
+                        "</div>";
+                }
+            }
         }
 
         if($request->ajax()) {
-            if($request['navigation']) {
-                return view('webpages.sales');
+            $switchTo = $request['switch'];
+
+            if($switchTo == "parent") {
+                return view('webpages.sales.contracts.bo.parent.active');
             }
 
-            return $sales;
+            if($switchTo === "inactive_parent") {
+                return view('webpages.sales.contracts.bo.parent.inactive');
+            }
+
+            if($switchTo == "inactive") {
+                return view('webpages.sales.contracts.inactive');
+            }
+
+            if($switchTo == "child_bo") {
+                return view('webpages.sales.contracts.bo.child.active');
+            }
+
+            if($switchTo === "inactive_child_bo") {
+                return view('webpages.sales.contracts.bo.child.inactive');
+            }
+
+            if($request['navigation'] == "breakdowns") {
+                return view('webpages.breakdowns');
+            }
+
+            if($request['navigation']) {
+                return view('webpages.sales.contracts.index');
+            }
+
+            return $contracts;
         }
 
         return response()->json(['status' => 'success', 'message' => 'Webpage you were looking for weren\'t found'], 400);
@@ -123,27 +289,36 @@ class SalesController extends Controller
         $validator = Validator::make($request->all(), [
             'contract_id' => 'required',
             'bo_number' => 'required',
+            'bo_type' => 'required',
+            'station' => 'required',
             'month' => 'required',
             'year' => 'required',
             'type' => 'required',
             'amount_type' => 'required',
             'amount' => 'required',
             'gross_amount' => 'required',
-            'invoice_no' => 'required',
+            'agency_id' => 'required',
+            'advertiser_id' => 'required',
+            'ae' => 'required'
         ]);
 
         if($validator->passes()) {
-            Sales::create($request->all());
+            $sales = new Sales();
+
+            $sales->fill($request->all());
+
+            $sales->save();
 
             $new_sales = Sales::latest()->get()->first();
 
             $logs = new SalesLogs([
                 'sales_id' => $new_sales->id,
-                'action' => 'Sales breakdown added with a gross amount of ' . $new_sales['gross_amount'],
+                'action' => 'Sales breakdown added to '. $request['bo_number'] .' with a gross amount of ' . $new_sales['gross_amount'],
                 'bo_number' => $new_sales['bo_number'],
                 'type' => $new_sales['type'],
                 'amount' => $new_sales['amount'],
-                'gross_amount' => $new_sales['gross_amount']
+                'gross_amount' => $new_sales['gross_amount'],
+                'employee_id' => Auth::user()->id
             ]);
 
             $logs->save();
@@ -151,7 +326,7 @@ class SalesController extends Controller
             return response()->json(['status' => 'success', 'message' => 'A new sales breakdown has been added!']);
         }
 
-        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()]);
+        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()], 400);
     }
 
     public function update($id, Request $request) {
@@ -383,7 +558,7 @@ class SalesController extends Controller
             return response()->json(['status' => 'success', 'message' => 'Sales breakdown has been updated!']);
         }
 
-        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()]);
+        return response()->json(['status' => 'error', 'message' => $validator->errors()->all()], 400);
     }
 
     public function delete($id) {
@@ -397,7 +572,7 @@ class SalesController extends Controller
             return response()->json(['status' => 'success', 'message' => 'A sale has been deleted!']);
         }
 
-        return response()->json(['status' => 'error', 'message' => 'You don\'t have the administrative rights!']);
+        return response()->json(['status' => 'error', 'message' => 'You don\'t have the administrative rights!'], 400);
     }
 
     public function breakdowns(Request $request) {
@@ -487,7 +662,7 @@ class SalesController extends Controller
                         ->where('station', '=', $query['station'])
                         ->get();
 
-                        $month = ucfirst($query['station']);
+                    $month = ucfirst($query['station']);
                 }
 
                 // if user wants to see the sales with a specific agency
