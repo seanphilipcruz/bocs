@@ -82,6 +82,7 @@
                                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="salesDropdown">
                                         <a href="{{ route('sales') }}" id="sales" class="dropdown-item" navigation>{{ __('Sales') }}</a>
                                         <a href="{{ route('sales') }}" id="breakdowns" class="dropdown-item" navigation>{{ __('Breakdowns') }}</a>
+                                        <a href="{{ route('logs') }}" class="dropdown-item" id="sales_logs" navigation>{{ __('Logs') }}</a>
                                     </div>
                                 </li>
                             @elseif(auth()->user()->Job->level === "3")
