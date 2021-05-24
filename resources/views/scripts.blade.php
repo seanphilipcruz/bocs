@@ -131,7 +131,7 @@
                 let path = window.location.pathname;
 
                 // TODO: Refresh the webpage where it was.
-                window.location.replace('/');
+                window.location.replace('{{ route('home') }}');
 
                 console.log(path);
             }

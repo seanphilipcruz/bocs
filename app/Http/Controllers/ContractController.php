@@ -26,6 +26,7 @@ class ContractController extends Controller
                 ->where('bo_type', '=', 'normal')
                 ->where('is_active', '=', '1')
                 ->where('ae', '=', $executive)
+                ->whereYear('created_at', date('Y'))
                 ->orderBy('created_at')
                 ->get();
 
@@ -34,6 +35,7 @@ class ContractController extends Controller
                     ->where('bo_type', '=', 'normal')
                     ->where('is_active', '=', '0')
                     ->where('ae', '=', $executive)
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }
@@ -43,6 +45,7 @@ class ContractController extends Controller
                     ->where('bo_type', '=', 'parent')
                     ->where('is_active', '=', '1')
                     ->where('ae', '=', $executive)
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }
@@ -52,6 +55,7 @@ class ContractController extends Controller
                     ->where('bo_type', '=', 'parent')
                     ->where('is_active', '=', '0')
                     ->where('ae', '=', $executive)
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }
@@ -61,6 +65,7 @@ class ContractController extends Controller
                     ->where('bo_type', '=', 'child')
                     ->where('is_active', '=', '1')
                     ->where('ae', '=', $executive)
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }
@@ -70,6 +75,7 @@ class ContractController extends Controller
                     ->where('bo_type', '=', 'child')
                     ->where('is_active', '=', '0')
                     ->where('ae', '=', $executive)
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }
@@ -77,6 +83,7 @@ class ContractController extends Controller
             $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
                 ->where('bo_type', '=', 'normal')
                 ->where('is_active', '=', '1')
+                ->whereYear('created_at', date('Y'))
                 ->orderBy('created_at')
                 ->get();
 
@@ -84,6 +91,7 @@ class ContractController extends Controller
                 $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
                     ->where('bo_type', '=', 'normal')
                     ->where('is_active', '=', '0')
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }
@@ -92,6 +100,7 @@ class ContractController extends Controller
                 $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
                     ->where('bo_type', '=', 'parent')
                     ->where('is_active', '=', '1')
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }
@@ -100,6 +109,7 @@ class ContractController extends Controller
                 $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
                     ->where('bo_type', '=', 'parent')
                     ->where('is_active', '=', '0')
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }
@@ -108,6 +118,7 @@ class ContractController extends Controller
                 $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
                     ->where('bo_type', '=', 'child')
                     ->where('is_active', '=', '1')
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }
@@ -116,6 +127,7 @@ class ContractController extends Controller
                 $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
                     ->where('bo_type', '=', 'child')
                     ->where('is_active', '=', '0')
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }

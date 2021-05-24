@@ -28,6 +28,7 @@ class SalesController extends Controller
                 ->with('Sales', 'Agency', 'Advertiser', 'Employee')
                 ->where('ae', '=', $executive)
                 ->where('is_active', '=', '1')
+                ->whereYear('created_at', date('Y'))
                 ->orderBy('created_at')
                 ->get();
 
@@ -39,6 +40,7 @@ class SalesController extends Controller
                     ->where('is_active', '=', '0')
                     ->where('ae', '=', $executive)
                     ->orderBy('created_at')
+                    ->whereYear('created_at', date('Y'))
                     ->get();
             }
 
@@ -48,6 +50,7 @@ class SalesController extends Controller
                     ->where('bo_type', '=', 'parent')
                     ->where('ae', '=', $executive)
                     ->where('is_active', '=', '1')
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }
@@ -58,6 +61,7 @@ class SalesController extends Controller
                     ->where('bo_type', '=', 'parent')
                     ->where('ae', '=', $executive)
                     ->where('is_active', '=', '0')
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }
@@ -68,6 +72,7 @@ class SalesController extends Controller
                     ->where('bo_type', '=', 'child')
                     ->where('is_active', '=', '1')
                     ->where('ae', '=', $executive)
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }
@@ -78,6 +83,7 @@ class SalesController extends Controller
                     ->where('bo_type', '=', 'child')
                     ->where('is_active', '=', '0')
                     ->where('ae', '=', $executive)
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }
@@ -86,6 +92,7 @@ class SalesController extends Controller
                 ->with('Sales', 'Agency', 'Advertiser', 'Employee')
                 ->where('bo_type', '=', 'normal')
                 ->where('is_active', '=', '1')
+                ->whereYear('created_at', date('Y'))
                 ->get();
 
             if($request['inactive']) {
@@ -94,6 +101,7 @@ class SalesController extends Controller
                     ->where('bo_type', '=', 'normal')
                     ->orWhere('bo_type', '=', 'parent')
                     ->where('is_active', '=', '0')
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }
@@ -103,6 +111,7 @@ class SalesController extends Controller
                     ->with('Sales', 'Agency', 'Advertiser', 'Employee')
                     ->where('bo_type', '=', 'parent')
                     ->where('is_active', '=', '1')
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }
@@ -112,6 +121,7 @@ class SalesController extends Controller
                     ->with('Sales', 'Agency', 'Advertiser', 'Employee')
                     ->where('bo_type', '=', 'parent')
                     ->where('is_active', '=', '0')
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }
@@ -121,6 +131,7 @@ class SalesController extends Controller
                     ->with('Sales', 'Agency', 'Advertiser', 'Employee')
                     ->where('bo_type', '=', 'child')
                     ->where('is_active', '=', '1')
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }
@@ -130,6 +141,7 @@ class SalesController extends Controller
                     ->with('Sales', 'Agency', 'Advertiser', 'Employee')
                     ->where('bo_type', '=', 'child')
                     ->where('is_active', '=', '0')
+                    ->whereYear('created_at', date('Y'))
                     ->orderBy('created_at')
                     ->get();
             }
@@ -154,7 +166,7 @@ class SalesController extends Controller
 
             foreach ($contract->Sales as $sale) {
                 // getting the breakdown of the contracts
-                $contract->breakdown_amount = array_sum($sale->where('contract_id', $contract->id)->pluck('gross_amount')->toArray());
+                $contract->breakdown_amount = array_sum($sale->where('contract_id', $contract->id)->where('type', '!=', 'totalprod')->pluck('gross_amount')->toArray());
                 $contract->breakdown_prod = array_sum($sale->where('contract_id', $contract->id)->where('type', '=', 'totalprod')->pluck('gross_amount')->toArray());
 
                 // displaying the total amount in the tables
