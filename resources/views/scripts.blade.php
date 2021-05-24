@@ -130,10 +130,23 @@
                 event.preventDefault();
                 let path = window.location.pathname;
 
-                // TODO: Refresh the webpage where it was.
-                window.location.replace('{{ route('home') }}');
+                if(path.includes('advertisers')) {
 
-                console.log(path);
+                } else if(path.includes('agencies')) {
+
+                } else if(path.includes('contracts')) {
+
+                } else if(path.includes('sales')) {
+
+                } else if(path.includes('jobs')) {
+
+                } else if(path.includes('employees')) {
+
+                } else if(path.includes('archives')) {
+
+                } else {
+                    window.location.replace('{{ route('home') }}');
+                }
             }
         });
     });
@@ -727,10 +740,6 @@
     });
 
     // for getting the total amount and total prod
-    $(document).on('keyup', '#manila_cash, #cebu_cash, #davao_cash, #manila_ex, #cebu_ex, #davao_ex, #manila_prod, #cebu_prod, #davao_prod', function() {
-        findTotal();
-    });
-
     function findTotal() {
         gross = $('#gross');
         net = $('#net');
@@ -770,6 +779,8 @@
             $('#total_ex').val(totalex);
 
             $('#total_amount').val(totalamount);
+
+            console.log(totalamount);
         }
 
         // Prod
@@ -787,6 +798,8 @@
             totalprod = manilaprod + cebuprod + davaoprod;
 
             $('#total_prod').val(totalprod);
+
+            console.log(totalprod);
         }
 
     }

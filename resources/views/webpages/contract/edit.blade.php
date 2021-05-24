@@ -249,7 +249,7 @@
                     <div class="form-group">
                         <label for="agency_id">Agency <span id="kbp_accreditation"></span></label>
                         <select id="agency_id" name="agency_id" class="custom-select">
-                            <option value selected>--</option>
+                            <option value>--</option>
                             @forelse($agencies as $agency)
                                 <option value="{{ $agency->agency_code }}">{{ $agency->agency_name }}</option>
                             @empty
@@ -261,7 +261,7 @@
                     <div class="form-group">
                         <label for="agency_id">Agency <span id="kbp_accreditation">@if($contract->Agency->kbp_accredited === 0) <span class='badge badge-warning'>Non-Accredited</span> @elseif($contract->Agency->kbp_accredited === 1) <span class='badge badge-success'>Accredited</span> @else <span class='badge badge-danger'>Undefined</span> @endif</span></label>
                         <select id="agency_id" name="agency_id" class="custom-select">
-                            <option value="{{ $contract['agency_id'] }}" selected>{{ $contract->Agency->agency_name }}</option>
+                            <option value="{{ $contract['agency_id'] }}">{{ $contract->Agency->agency_name }}</option>
                             @forelse($agencies as $agency)
                                 <option value="{{ $agency->agency_code }}">{{ $agency->agency_name }}</option>
                             @empty
@@ -276,7 +276,7 @@
                     <div class="form-group">
                         <label for="advertiser_id">Advertiser</label>
                         <select id="advertiser_id" name="advertiser_id" class="custom-select">
-                            <option value selected>--</option>
+                            <option value>--</option>
                             @forelse($advertisers as $advertiser)
                                 <option value="{{ $advertiser->advertiser_code }}">{{ $advertiser->advertiser_name }}</option>
                             @empty
@@ -288,7 +288,7 @@
                     <div class="form-group">
                         <label for="advertiser_id">Advertiser</label>
                         <select id="advertiser_id" name="advertiser_id" class="custom-select">
-                            <option value="{{ $contract['advertiser_id'] }}" selected>{{ $contract->Advertiser->advertiser_name }}</option>
+                            <option value="{{ $contract['advertiser_id'] }}">{{ $contract->Advertiser->advertiser_name }}</option>
                             @forelse($advertisers as $advertiser)
                                 <option value="{{ $advertiser->advertiser_code }}">{{ $advertiser->advertiser_name }}</option>
                             @empty
@@ -559,45 +559,45 @@
                                 @if($contract['manila_cash'] !== '0.00')
                                     <div class="form-group">
                                         <label for="manila_cash">Manila Cash</label>
-                                        <input type="number" id="manila_cash" name="manila_cash" class="form-control" value="{{ $contract['manila_cash'] }}">
+                                        <input type="number" id="manila_cash" name="manila_cash" class="form-control" value="{{ $contract['manila_cash'] }}" onblur="findTotal()">
                                     </div>
                                 @else
                                     <div class="form-group">
                                         <label for="manila_cash">Manila Cash</label>
-                                        <input type="number" id="manila_cash" name="manila_cash" class="form-control" value="0.00" readonly>
+                                        <input type="number" id="manila_cash" name="manila_cash" class="form-control" value="0.00" readonly onblur="findTotal()">
                                     </div>
                                 @endif
                                 @if($contract['cebu_cash'] !== '0.00')
                                     <div class="form-group">
                                         <label for="cebu_cash">Cebu Cash</label>
-                                        <input type="number" id="cebu_cash" name="cebu_cash" class="form-control" value="{{ $contract['cebu_cash'] }}">
+                                        <input type="number" id="cebu_cash" name="cebu_cash" class="form-control" value="{{ $contract['cebu_cash'] }}" onblur="findTotal()">
                                     </div>
                                 @else
                                     <div class="form-group">
                                         <label for="cebu_cash">Cebu Cash</label>
-                                        <input type="number" id="cebu_cash" name="cebu_cash" class="form-control" value="0.00" readonly>
+                                        <input type="number" id="cebu_cash" name="cebu_cash" class="form-control" value="0.00" readonly onblur="findTotal()">
                                     </div>
                                 @endif
                                 @if($contract['davao_cash'] !== '0.00')
                                     <div class="form-group">
                                         <label for="davao_cash">Davao Cash</label>
-                                        <input type="number" id="davao_cash" name="davao_cash" class="form-control" value="{{ $contract['davao_cash'] }}">
+                                        <input type="number" id="davao_cash" name="davao_cash" class="form-control" value="{{ $contract['davao_cash'] }}" onblur="findTotal()">
                                     </div>
                                 @else
                                     <div class="form-group">
                                         <label for="davao_cash">Davao Cash</label>
-                                        <input type="number" id="davao_cash" name="davao_cash" class="form-control" value="0.00" readonly>
+                                        <input type="number" id="davao_cash" name="davao_cash" class="form-control" value="0.00" readonly onblur="findTotal()">
                                     </div>
                                 @endif
                                 @if($contract['total_cash'] !== '0.00')
                                     <div class="form-group">
                                         <label for="total_cash">Total Cash</label>
-                                        <input type="number" id="total_cash" name="total_cash" class="form-control" value="{{ $contract['total_cash'] }}">
+                                        <input type="number" id="total_cash" name="total_cash" class="form-control" value="{{ $contract['total_cash'] }}" onblur="findTotal()">
                                     </div>
                                 @else
                                     <div class="form-group">
                                         <label for="total_cash">Total Cash</label>
-                                        <input type="number" id="total_cash" name="total_cash" class="form-control" value="0.00" readonly>
+                                        <input type="number" id="total_cash" name="total_cash" class="form-control" value="0.00" readonly onblur="findTotal()">
                                     </div>
                                 @endif
                             </div>
@@ -605,7 +605,7 @@
                                 @if($contract['manila_ex'] !== '0.00')
                                     <div class="form-group">
                                         <label for="manila_ex">Manila Ex Deal</label>
-                                        <input type="number" id="manila_ex" name="manila_ex" class="form-control" value="{{ $contract['manila_ex'] }}">
+                                        <input type="number" id="manila_ex" name="manila_ex" class="form-control" value="{{ $contract['manila_ex'] }}" onblur="findTotal()">
                                     </div>
                                 @else
                                     <div class="form-group">
@@ -616,7 +616,7 @@
                                 @if($contract['cebu_ex'] !== '0.00')
                                     <div class="form-group">
                                         <label for="cebu_ex">Cebu Ex Deal</label>
-                                        <input type="number" id="cebu_ex" name="cebu_ex" class="form-control" value="{{ $contract['cebu_ex'] }}">
+                                        <input type="number" id="cebu_ex" name="cebu_ex" class="form-control" value="{{ $contract['cebu_ex'] }}" onblur="findTotal()">
                                     </div>
                                 @else
                                     <div class="form-group">
@@ -627,7 +627,7 @@
                                 @if($contract['davao_ex'] !== '0.00')
                                     <div class="form-group">
                                         <label for="davao_ex">Davao Ex Deal</label>
-                                        <input type="number" id="davao_ex" name="davao_ex" class="form-control" value="{{ $contract['davao_ex'] }}">
+                                        <input type="number" id="davao_ex" name="davao_ex" class="form-control" value="{{ $contract['davao_ex'] }}" onblur="findTotal()">
                                     </div>
                                 @else
                                     <div class="form-group">
@@ -830,7 +830,7 @@
                                 @if($contract['manila_prod'] !== '0.00')
                                     <div class="form-group">
                                         <label for="manila_prod">Manila Prod</label>
-                                        <input type="number" id="manila_prod" name="manila_prod" class="form-control" value="{{ $contract['manila_prod'] }}">
+                                        <input type="number" id="manila_prod" name="manila_prod" class="form-control" value="{{ $contract['manila_prod'] }}" onblur="findTotal()">
                                     </div>
                                 @else
                                     <div class="form-group">
@@ -841,7 +841,7 @@
                                 @if($contract['cebu_prod'] !== '0.00')
                                     <div class="form-group">
                                         <label for="cebu_prod">Cebu Prod</label>
-                                        <input type="number" id="cebu_prod" name="cebu_prod" class="form-control" value="{{ $contract['cebu_prod'] }}">
+                                        <input type="number" id="cebu_prod" name="cebu_prod" class="form-control" value="{{ $contract['cebu_prod'] }}" onblur="findTotal()">
                                     </div>
                                 @else
                                     <div class="form-group">
@@ -852,7 +852,7 @@
                                 @if($contract['davao_prod'] !== '0.00')
                                     <div class="form-group">
                                         <label for="davao_prod">Davao Prod</label>
-                                        <input type="number" id="davao_prod" name="davao_prod" class="form-control" value="{{ $contract['davao_prod'] }}">
+                                        <input type="number" id="davao_prod" name="davao_prod" class="form-control" value="{{ $contract['davao_prod'] }}" onblur="findTotal()">
                                     </div>
                                 @else
                                     <div class="form-group">

@@ -73,6 +73,9 @@
             { data: 'contract.bo_number' },
             { data: 'version' },
             { data: 'options' },
+        ],
+        order: [
+            [ 0, 'desc' ]
         ]
     });
 </script>
