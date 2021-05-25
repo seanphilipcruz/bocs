@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::put('contracts/update/{id}', ['as' => 'contracts.update', 'uses' => 'ContractController@update']);
     Route::delete('contracts/delete/{id}', ['as' => 'contracts.delete', 'uses' => 'ContractController@delete']);
     Route::get('contracts/generate/{id}', ['as' => 'contracts.generate', 'uses' => 'ContractController@generatePDF']);
+    Route::get('contracts/generate/text/{id}', ['as' => 'contracts.generate.text', 'uses' => 'ContractController@generateText']);
 
     Route::get('employees', ['as' => 'employees', 'uses' => 'EmployeeController@index']);
     Route::get('employees/show', ['as' => 'employees.show', 'uses' => 'EmployeeController@show']);
@@ -66,6 +67,10 @@ Route::middleware('auth')->group(function () {
     Route::get('archives', ['as' => 'archives', 'uses' => 'ArchiveController@index']);
     Route::get('archives/show/{id}', ['as' => 'archives.show', 'uses' => 'ArchiveController@show']);
 });
+
+// Compute contract total
+Route::post('/find/total', ['as' => 'find.total', 'uses' => 'ContractController@findTotal']);
+Route::post('/find/sales/total', ['as' => 'find.sales.total', 'uses' => 'ContractController@findSalesTotal']);
 
 // Request an Account
 Route::post('/request/account', ['as' => 'account.request', 'uses' => 'EmployeeController@request']);

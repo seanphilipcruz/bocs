@@ -189,7 +189,7 @@
                     <hr class="my-4">
                     <div class="form-group">
                         <label for="sale_amount">Amount</label>
-                        <input type="text" id="sale_amount" name="amount" class="form-control" placeholder="Amount" onchange="findSalesTotal()">
+                        <input type="text" id="sale_amount" name="amount" class="form-control" placeholder="Amount">
                     </div>
                     <div class="form-group">
                         <input type="text" id="sale_gross_amount" name="gross_amount" class="form-control" value="Gross Amount" readonly>
@@ -228,10 +228,6 @@
             [ 0, 'desc']
         ]
     });
-
-    setInterval(() => {
-        contractsTable.ajax.reload(null, false);
-    }, 3000);
 
     $('#add-sales-breakdown-modal').on('hide.bs.modal', function() {
         $('select').prop('selectedIndex', 0);

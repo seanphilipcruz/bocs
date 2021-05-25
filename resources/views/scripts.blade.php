@@ -4,7 +4,7 @@
 <script src="{{ asset('js/datatables.min.js') }}"></script>
 <script src="{{ asset('js/chart.min.js') }}"></script>
 
-<script>
+<script type="text/javascript">
     $.ajaxSetup({
         headers:{
             'X-CSRF-TOKEN':$('meta[name="csrf-token"]').attr('content'),
@@ -739,8 +739,10 @@
         }
     });
 
-    // for getting the total amount and total prod
-    function findTotal() {
+    // for getting the total amount and total prod, the new findTotal function.
+    $(document).on('keyup', '#manila_cash, #cebu_cash, #davao_cash, #manila_ex, #cebu_ex, #davao_ex, #manila_prod, #cebu_prod, #davao_prod', function() {
+        let url = '{{ route('find.total') }}';
+
         gross = $('#gross');
         net = $('#net');
         vatinc = $('#vatinc');
@@ -759,106 +761,103 @@
         cebuex = $('#cebu_ex').val() || 0.00;
         davaoex = $('#davao_ex').val() || 0.00;
 
-        manilacash = parseFloat(manilacash);
-        cebucash = parseFloat(cebucash);
-        davaocash = parseFloat(davaocash);
-
-        manilaex = parseFloat(manilaex);
-        cebuex = parseFloat(cebuex);
-        davaoex = parseFloat(davaoex);
-
-
-        if(gross.prop("checked") || net.prop("checked") || vatinc.prop("checked") || nonvat.prop("checked")) {
-            //
-        } else {
-            totalcash =  manilacash+ cebucash + davaocash;
-            totalex = manilaex + cebuex + davaoex;
-            totalamount = totalcash + totalex;
-
-            $('#total_cash').val(totalcash);
-            $('#total_ex').val(totalex);
-
-            $('#total_amount').val(totalamount);
-
-            console.log(totalamount);
-        }
-
-        // Prod
         manilaprod = $('#manila_prod').val() || 0.00;
         cebuprod = $('#cebu_prod').val() || 0.00;
         davaoprod = $('#davao_prod').val() || 0.00;
 
-        if(prodgross.prop("checked") || prodnet.prop("checked") || prodvatinc.prop("checked") || prodnonvat.prop("checked")) {
-            //
+        let formData = new FormData();
+
+        if(gross.prop("checked") || net.prop("checked") || vatinc.prop("checked") || nonvat.prop("checked")) {
+            gross = 1;
+            net = 1;
+            vatinc = 1;
+            nonvat = 1;
         } else {
-            manilaprod = parseFloat(manilaprod);
-            cebuprod = parseFloat(cebuprod);
-            davaoprod = parseFloat(davaoprod);
-
-            totalprod = manilaprod + cebuprod + davaoprod;
-
-            $('#total_prod').val(totalprod);
-
-            console.log(totalprod);
+            gross = 0;
+            net = 0;
+            vatinc = 0;
+            nonvat = 0;
         }
 
-    }
+        if(prodgross.prop("checked") || prodnet.prop("checked") || prodvatinc.prop("checked") || prodnonvat.prop("checked")) {
+            prodgross = 1;
+            prodnet = 1;
+            prodvatinc = 1;
+            prodnonvat = 1;
+        } else {
+            prodgross = 0;
+            prodnet = 0;
+            prodvatinc = 0;
+            prodnonvat = 0;
+        }
 
-    function findSalesTotal() {
+        formData.append("gross", gross);
+        formData.append("net", net);
+        formData.append("vatinc", vatinc);
+        formData.append("nonvat", nonvat);
+        formData.append("prod_gross", prodgross);
+        formData.append("prod_net", prodnet);
+        formData.append("prod_vatinc", prodvatinc);
+        formData.append("prod_nonvat", prodnonvat);
+        formData.append("manila_cash", manilacash);
+        formData.append("cebu_cash", cebucash);
+        formData.append("davao_cash", davaocash);
+        formData.append("manila_ex", manilaex);
+        formData.append("cebu_ex", cebuex);
+        formData.append("davao_ex", davaoex);
+        formData.append("manila_prod", manilaprod);
+        formData.append("cebu_prod", cebuprod);
+        formData.append("davao_prod", davaoprod);
+
+        postAsync(url, formData, 'JSON', beforeSend, onSuccess);
+
+        function beforeSend() {
+
+        }
+
+        function onSuccess(result) {
+            $('#total_amount').val(result.total_amount);
+            $('#total_cash').val(result.total_cash);
+            $('#total_ex').val(result.total_ex);
+            $('#total_prod').val(result.total_prod);
+        }
+    });
+
+    $(document).on('change', '#sale_amount', function() {
+        let url = '{{ route('find.sales.total') }}';
+
         type = $('#type').val();
         amount = $('#sale_amount').val();
 
-        amount = parseFloat(amount);
+        package_cost = $('#package_cost').val();
+        package_cost_vat = $('#package_cost_vat').val();
+        package_cost_salesdc = $('#package_cost_salesdc').val();
 
-        if(type == 'airtime' || type == 'spots' || type == 'live' || type == 'DJDisc' || type == 'top10' || type === 'Spots')
-        {
-            typecost = $('#package_cost').val();
-            typecost_vat = $('#package_cost_vat').val();
-            typecost_salesdc = $('#package_cost_salesdc').val();
+        prod_cost = $('#prod_cost').val();
+        prod_cost_vat = $('#prod_cost_vat').val();
+        prod_cost_salesdc = $('#prod_cost_salesdc').val();
 
-        } else if (type == 'totalprod') {
-            typecost = $('#prod_cost').val();
-            typecost_vat = $('#prod_cost_vat').val();
-            typecost_salesdc = $('#prod_cost_salesdc').val();
+        let formData = new FormData();
+
+        formData.append('type', type);
+        formData.append('amount', amount);
+        formData.append('package_cost', package_cost);
+        formData.append('package_cost_vat', package_cost_vat);
+        formData.append('package_cost_salesdc', package_cost_salesdc);
+        formData.append('prod_cost', prod_cost);
+        formData.append('prod_cost_vat', prod_cost_vat);
+        formData.append('prod_cost_salesdc', prod_cost_salesdc);
+
+        postAsync(url, formData, 'JSON', beforeSend, onSuccess);
+
+        function beforeSend() {
+
         }
 
-        if(typecost == 'Package Cost(NET)' || typecost == 'Production Cost(NET)')
-        {
-            //NET
-            gross = amount / .85;
-            gross = Math.round((gross) * 100) / 100;
-        } else if(typecost == 'Package Cost(GROSS)' || typecost == 'Production Cost(GROSS)') {
-            //GROSS
-            gross = amount;
-            gross = Math.round((gross) * 100) / 100;
+        function onSuccess(result) {
+            $('#sale_gross_amount').val(result.gross_amount);
         }
-
-        $('#sale_gross_amount').val(gross);
-
-        // NET/GROSS AND VATINC
-        if(typecost_vat == 'VATINC')
-        {
-            gross = gross/1.12;
-            gross = Math.round((gross) * 100) / 100;
-
-            $('#sale_gross_amount').val(gross);
-            // NET/GROSS AND VAT INC AND DISC
-            if(typecost_salesdc !== 0)
-            {
-                gross = gross / ((100 - typecost_salesdc)/100);
-                gross = Math.round((gross) * 100) / 100;
-                $('#sale_gross_amount').val(gross);
-            }
-        }
-        // NET/GROSS AND SALES DISC
-        else if (typecost_salesdc !== 0)
-        {
-            gross = gross / ((100 - typecost_salesdc)/100);
-            gross = Math.round((gross) * 100) / 100;
-
-            $('#sale_gross_amount').val(gross);
-        }
-    }
+    });
     //end
 
     // reset buttons

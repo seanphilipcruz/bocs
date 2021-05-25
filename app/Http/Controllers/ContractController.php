@@ -10,10 +10,12 @@ use App\ContractRevision;
 use App\Employee;
 use Auth;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Support\Str;
+use Storage;
 
 class ContractController extends Controller
 {
@@ -189,6 +191,7 @@ class ContractController extends Controller
                     $contract->options = "" .
                         "<div class='btn-group'>" .
                         "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark'><i class='fas fa-download'></i></a>" .
+                        "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
                         "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Reactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-check'></i></a>" .
                         "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
                         "</div>";
@@ -208,6 +211,7 @@ class ContractController extends Controller
                         $contract->options = "" .
                             "<div class='btn-group'>" .
                             "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-download'></i></a>" .
+                            "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-file-alt'></i></a>" .
                             "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-plus'></i></a>" .
                             "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Deactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-times'></i></a>" .
                             "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
@@ -217,6 +221,7 @@ class ContractController extends Controller
                         $contract->options = "" .
                             "<div class='btn-group'>" .
                             "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-download'></i></a>" .
+                            "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-file-alt'></i></a>" .
                             "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-plus'></i></a>" .
                             "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Deactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-times'></i></a>" .
                             "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
@@ -226,6 +231,7 @@ class ContractController extends Controller
                         $contract->options = "" .
                             "<div class='btn-group'>" .
                             "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark'><i class='fas fa-download'></i></a>" .
+                            "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
                             "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-plus'></i></a>" .
                             "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Deactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-times'></i></a>" .
                             "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
@@ -241,6 +247,7 @@ class ContractController extends Controller
                     $contract->options = "" .
                         "<div class='btn-group'>" .
                         "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark'><i class='fas fa-download'></i></a>" .
+                        "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
                         "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-plus'></i></a>" .
                         "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Reactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-check'></i></a>" .
                         "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
@@ -260,6 +267,7 @@ class ContractController extends Controller
                         $contract->options = "" .
                             "<div class='btn-group'>" .
                             "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-download'></i></a>" .
+                            "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-file-alt'></i></a>" .
                             "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-plus'></i></a>" .
                             "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Reactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-check'></i></a>" .
                             "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
@@ -269,6 +277,7 @@ class ContractController extends Controller
                         $contract->options = "" .
                             "<div class='btn-group'>" .
                             "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-download'></i></a>" .
+                            "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-file-alt'></i></a>" .
                             "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-plus'></i></a>" .
                             "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Reactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-check'></i></a>" .
                             "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
@@ -278,6 +287,7 @@ class ContractController extends Controller
                         $contract->options = "" .
                             "<div class='btn-group'>" .
                             "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark'><i class='fas fa-download'></i></a>" .
+                            "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
                             "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-plus'></i></a>" .
                             "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Reactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-check'></i></a>" .
                             "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
@@ -488,55 +498,20 @@ class ContractController extends Controller
 
         $revision = ContractRevision::where('contract_id', '=', $id);
 
-        if($revision->count() == 1) {
-            if($contract['advertiser_id'] === 0) {
-                $contract['advertiser_id'] = $request['advertiser_id'];
-            } else {
-                $contract['agency_id'] = $request['agency_id'];
-            }
+        if($contract['advertiser_id'] === 0) {
+            $contract['advertiser_id'] = $request['advertiser_id'];
+        }
 
+        if($contract['agency_id'] === 0) {
+            $contract['agency_id'] = $request['agency_id'];
+        }
+
+        if($revision->count() == 1) {
             $revision->get()->first();
 
             $revision->increment('version');
 
-            $revision->update([
-                'contract_id' => $contract['id'],
-                'contract_number' => $contract['contract_number'],
-                'station' => $contract['station'],
-                'agency_id' => $contract['agency_id'],
-                'advertiser_id' => $contract['advertiser_id'],
-                'product' => $contract['product'],
-                'bo_type' => $contract['bo_type'],
-                'parent_bo' => $contract['parent_bo'],
-                'bo_number' => $contract['bo_number'],
-                'ce_number' => $contract['ce_number'],
-                'bo_date' => $contract['bo_date'],
-                'commencement' => $contract['commencement'],
-                'end_of_broadcast' => $contract['end_of_broadcast'],
-                'detail' => $contract['detail'],
-                'package_cost' => $contract['package_cost'],
-                'package_cost_vat' => $contract['package_cost_vat'],
-                'package_cost_salesdc' => $contract['package_cost_salesdc'],
-                'manila_cash' => $contract['manila_cash'],
-                'cebu_cash' => $contract['cebu_cash'],
-                'davao_cash' => $contract['davao_cash'],
-                'total_cash' => $contract['total_cash'],
-                'manila_ex' => $contract['manila_ex'],
-                'cebu_ex' => $contract['cebu_ex'],
-                'davao_ex' => $contract['davao_ex'],
-                'total_ex' => $contract['total_ex'],
-                'total_amount' => $contract['total_amount'],
-                'prod_cost' => $contract['prod_cost'],
-                'prod_cost_vat' => $contract['prod_cost_vat'],
-                'prod_cost_salesdc' => $contract['prod_cost_salesdc'],
-                'manila_prod' => $contract['manila_prod'],
-                'cebu_prod' => $contract['cebu_prod'],
-                'davao_prod' => $contract['davao_prod'],
-                'total_prod' => $contract['total_prod'],
-                'ae' => $contract['ae'],
-                'is_printed' => $contract['is_printed'],
-                'is_active' => $contract['is_active'],
-            ]);
+            $revision->update($contract->toArray());
         } else {
             $contract_revision = new ContractRevision($contract->toArray());
 
@@ -617,5 +592,366 @@ class ContractController extends Controller
         $contract->save();
 
         return $pdf->download(date('Y-m-d') . "-" . $contract['contract_number'] . "-" . mt_rand(1000, 9999) . ".pdf");
+    }
+
+    public function generateText($id) {
+        $contract = Contract::with('Agency', 'Advertiser', 'Employee')->findOrFail($id);
+
+        $contract['is_printed'] = 1;
+
+        $contract->save();
+
+        $file_name = $contract['contract_number'] . '-' . mt_rand(1000, 9999) . '-contract.txt';
+        $contract['ae'] = $contract->Employee->first_name[0] . $contract->Employee->middle_name[0] . $contract->Employee->last_name[0];
+        $my_file = fopen($file_name, 'w') or die ("Unable to open file");
+
+        $verify = $this->checkLocal($contract['contract_number']);
+
+        if($verify === true) {
+            $txt = $this->linebreak(7). $this->tab(9) . '    ' . $contract['contract_number'].
+                $this->linebreak(2) . $this->tab(9) . date('F d Y', strtotime($contract['created_at'])).
+                $this->linebreak(3) . $this->tab(3) . $contract['station'].
+                $this->linebreak(3) . $this->tab(3) . $contract->Advertiser->advertiser_name.
+                $this->linebreak(2) . 'Address: ' . $contract->Agency->address .
+                $this->linebreak(1) . 'Contact No: ' . $contract->Agency->contact_number.
+                $this->linebreak(2) . $contract->Agency->agency_name . $this->tabBreaker($contract->Agency->agency_name) . $contract['product'].
+                $this->linebreak(7) . $contract['detail'].
+                $this->linebreak($this->lineBreaker($contract['detail'])) . $this->tab(8) . '     ' . $this->generateCost($contract['total_prod'], $contract['prod_cost'], $contract['prod_cost_vat']).
+                "\r\n". $this->generateCashEx($contract['manila_prod'], $contract['cebu_prod'], $contract['davao_prod'],'Manila','Cebu','Davao', $contract['total_prod']).
+                "\r\n". $this->tab(8) .'     '. $this->generateCost($contract['total_amount'], $contract['package_cost'], $contract['package_cost_vat']).
+                "\r\n". $this->generateCashEx($contract['manila_cash'], $contract['cebu_cash'], $contract['davao_cash'],'Manila','Cebu','Davao', $contract['total_amount']).
+                "\r\n". $this->generateCashEx($contract['manila_ex'], $contract['cebu_ex'], $contract['davao_ex'],'Exdeal','Exdeal','Exdeal', $contract['total_ex']).
+                $this->linebreak(4). date("M d Y", strtotime($contract['commencement'])) . $this->tab(4) . date("M d Y", strtotime($contract['end_of_broadcast'])).
+                $this->linebreak(4). date("M d Y", strtotime($contract['bo_date'])) ."\t\t". $contract['bo_number'].
+                $this->linebreak(4). $contract->Advertiser->advertiser_name.$this->tab(6). $contract->Agency->agency_name.
+                $this->linebreak(9). date("M d Y")."\t0\t\t  ".'AE/'. $contract['ae'] . $this->tab(3) . $this->consignee($contract['contract_number']);
+
+            fwrite($my_file, $txt);
+            fclose($my_file);
+
+            //force download the textfile to user's download file
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename='. basename($file_name));
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: '.filesize($file_name));
+            readfile($file_name);
+            exit;
+
+        } else {
+            $txt = $this->linebreak(7). $this->tab(9) . '    ' . $contract['contract_number'].
+                $this->linebreak(2) . $this->tab(9) . date('F d Y', strtotime($contract['created_at'])).
+                $this->linebreak(3) . $this->tab(3) . $contract['station'].
+                $this->linebreak(3) . $this->tab(3) . $contract->Advertiser->advertiser_name.
+                $this->linebreak(5) . $contract->Agency->agency_name . $this->tabBreaker($contract->Agency->agency_name) . $contract['product'].
+                $this->linebreak(7) . $contract['detail'].
+                $this->linebreak($this->lineBreaker($contract['detail'])) . $this->tab(8) . '     ' . $this->generateCost($contract['total_prod'], $contract['prod_cost'], $contract['prod_cost_vat']).
+                "\r\n". $this->generateCashEx($contract['manila_prod'], $contract['cebu_prod'], $contract['davao_prod'],'Manila','Cebu','Davao', $contract['total_prod']).
+                "\r\n". $this->tab(8) .'     '. $this->generateCost($contract['total_amount'], $contract['package_cost'], $contract['package_cost_vat']).
+                "\r\n". $this->generateCashEx($contract['manila_cash'], $contract['cebu_cash'], $contract['davao_cash'],'Manila','Cebu','Davao', $contract['total_amount']).
+                "\r\n". $this->generateCashEx($contract['manila_ex'], $contract['cebu_ex'], $contract['davao_ex'],'Exdeal','Exdeal','Exdeal', $contract['total_ex']).
+                $this->linebreak(4). date("M d Y", strtotime($contract['commencement'])) . $this->tab(4) . date("M d Y", strtotime($contract['end_of_broadcast'])).
+                $this->linebreak(4). date("M d Y", strtotime($contract['bo_date'])) ."\t\t". $contract['bo_number'].
+                $this->linebreak(4). $contract->Advertiser->advertiser_name.$this->tab(6). $contract->Agency->agency_name.
+                $this->linebreak(9). date("M d Y")."\t\t\t  ".'AE/'. $contract['ae'] . $this->tab(3) . $this->consignee($contract['contract_number']);
+
+            fwrite($my_file, $txt);
+            fclose($my_file);
+            //end
+
+            //force download the textfile to user's download file
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename='.basename($file_name));
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: '.filesize($file_name));
+            readfile($file_name);
+            exit;
+        }
+    }
+
+    public function findTotal(Request $request) : JsonResponse {
+        $gross = $request['gross'];
+        $net = $request['net'];
+        $vatinc = $request['vatinc'];
+        $nonvat = $request['nonvat'];
+
+        $prod_gross = $request['prod_gross'];
+        $prod_net = $request['prod_net'];
+        $prod_vatinc = $request['prod_vatinc'];
+        $prod_nonvat = $request['prod_nonvat'];
+
+        // convert string to int for computations
+        $manila_cash = floatval($request['manila_cash']) ? floatval($request['manila_cash']) : 0.00;
+        $cebu_cash = floatval($request['cebu_cash']) ? floatval($request['cebu_cash']) : 0.00;
+        $davao_cash = floatval($request['davao_cash']) ? floatval($request['davao_cash']) : 0.00;
+
+        $manila_ex = floatval($request['manila_ex']) ? floatval($request['manila_ex']) : 0.00;
+        $cebu_ex = floatval($request['cebu_ex']) ? floatval($request['cebu_ex']) : 0.00;
+        $davao_ex = floatval($request['davao_ex']) ? floatval($request['davao_ex']) : 0.00;
+
+        $total_cash = 0.00;
+        $total_ex = 0.00;
+        $total_amount = 0.00;
+
+        if($gross === 1 || $net === 1 || $vatinc === 1 || $nonvat === 1) {
+            //
+        } else {
+            $total_cash = $manila_cash + $cebu_cash + $davao_cash;
+            $total_ex = $manila_ex + $cebu_ex + $davao_ex;
+            $total_amount = $total_cash + $total_ex;
+        }
+
+        $manila_prod = floatval($request['manila_prod']) ? floatval($request['manila_prod']) : 0.00;
+        $cebu_prod = floatval($request['cebu_prod']) ? floatval($request['cebu_prod']) : 0.00;
+        $davao_prod = floatval($request['davao_prod']) ? floatval($request['davao_prod']) : 0.00;
+
+        $total_prod = 0.00;
+
+        if($prod_gross === 1 || $prod_net === 1 || $prod_vatinc === 1 || $prod_nonvat === 1) {
+            //
+        } else {
+            $total_prod = $manila_prod + $cebu_prod + $davao_prod;
+
+            return response()->json(['total_prod' => $total_prod, 'total_cash' => $total_cash, 'total_ex' => $total_ex, 'total_amount' => $total_amount]);
+        }
+    }
+
+    public function findSalesTotal(Request $request) : JsonResponse {
+        $type = $request['type'];
+        $amount = floatval($request['amount']);
+
+        if($type == "airtime" || $type == "spots" || $type == "live" || $type == "DJDisc" || $type == "top10" || $type == "Spots") {
+            $typecost = $request['package_cost'];
+            $typecost_vat = $request['package_cost_vat'];
+            $typecost_salesdc = $request['package_cost_salesdc'];
+        } else if ($type == "totalprod") {
+            $typecost = $request['prod_cost'];
+            $typecost_vat = $request['prod_cost_vat'];
+            $typecost_salesdc = $request['prod_cost_salesdc'];
+        }
+
+        if($typecost == "Package Cost(NET)" || $typecost == "Production Cost(NET)") {
+            $gross = $amount / .85;
+            $gross = round(($gross) * 100) / 100;
+        } else if($typecost == "Package Cost(GROSS)" || $typecost == "Production Cost(GROSS)") {
+            $gross = $amount;
+            $gross = round(($gross) * 100) / 100;
+        }
+
+        $gross_amount = $gross;
+
+        if($typecost_vat == "VATINC") {
+            $gross = $gross / 1.12;
+            $gross = round($gross * 100) / 100;
+
+            $gross_amount = $gross;
+
+            if($typecost_salesdc !== 0) {
+                $gross = $gross / ((100 - $typecost_salesdc) / 100);
+                $gross = round(($gross) * 100) / 100;
+
+                $gross_amount = $gross;
+            }
+        } else if ($typecost_salesdc !== 0) {
+            $gross = $gross / ((100 - $typecost_salesdc) / 100);
+            $gross = round(($gross) * 100) / 100;
+
+            $gross_amount = $gross;
+        }
+
+        return response()->json(['gross_amount' => $gross_amount]);
+    }
+
+    // for generating text files
+    private function linebreak($num) {
+
+        $endline = '';
+
+        for ($i=0; $i < $num; $i++) {
+
+            $endline.= "\r\n";
+        }
+
+        return $endline;
+    }
+
+    private function tab($num) {
+
+        $tabs = '';
+
+        for ($i=0; $i < $num; $i++) {
+
+            $tabs.= "\t";
+        }
+
+        return $tabs;
+    }
+
+    private function consignee($contract_number) {
+
+        $consignee = '';
+
+        $manilatocebu = strpos($contract_number,"BT02");
+        $manilatodavao = strpos($contract_number,"CT02");
+        $manilatocebudavao = strpos($contract_number,"BTCT02");
+        $cebu = strpos($contract_number,"CEB");
+        $davao = strpos($contract_number,"DAV");
+        if(/*$manilatocebu !== false || */$manilatodavao !== false || $manilatocebudavao !== false)
+        {
+            $consignee = 'CECILIA C. BARREIRO';
+        }
+        elseif ($manilatocebu !== false) {
+
+            $consignee = 'ANTONIO V. BARREIRO JR.';
+        }
+        else if($cebu !== false)
+        {
+            $consignee = 'ANTONIO V. BARREIRO JR.';
+        }
+        else if($davao !== false)
+        {
+            $consignee = 'ANTONIO V. BARREIRO JR.';
+        }
+        else
+        {
+            $consignee = 'LUIS MARI V. BARREIRO';
+        }
+
+        return $consignee;
+    }
+
+    private function lineBreaker($string = null) {
+
+        $endline = substr_count($string, "\r\n");
+
+        if ($endline >= 1 ) {
+
+            $line = 17 - $endline;
+
+        } else {
+
+            $line = 17;
+        }
+
+        return $line;
+    }
+
+    private function tabBreaker($string = null) {
+
+        $tab = strlen($string);
+
+        if ($tab >= 12) {
+
+            return $this->tab(6);
+
+        } else {
+
+            return $this->tab(7).'    ';
+
+        }
+    }
+
+    private function checkLocal($string) {
+
+        $targets = array('DAV', 'CEB');
+
+        foreach($targets as $t)
+        {
+            if (strpos($string, $t) !== false) {
+                return true;
+                break;
+            }
+        }
+
+        // source code: https://stackoverflow.com/questions/19178295/check-if-string-contains-one-of-several-words
+        // string checker
+    }
+
+    private function generateCost($total, $cost, $vat) {
+
+        $totalprod = '';
+        $prodcost_vat = '';
+
+        if($total != 0.00){
+
+            $totalprod = $cost;
+
+            if($vat =='VATINC'){
+
+                $prodcost_vat = 'VAT-Inclusive';
+
+            } else if($vat == 'VATEX'){
+
+                $prodcost_vat = 'VAT-Exclusive';
+
+            } else if($vat =='NONVAT'){
+
+                $prodcost_vat = 'NON-VAT';
+            }
+        }
+
+        return $totalprod."\r\n".$this->tab(9).'   '.$prodcost_vat;
+    }
+
+    private function generateCashEx($manila, $cebu, $davao, $man, $ceb, $dav, $total) {
+
+        $MaCeDa = '';
+
+        if($manila != 0.00 && $davao == 0.00 && $cebu == 0.00){
+            if ($man == 'Exdeal') {
+
+                $Ma = $man.' '. number_format($manila, 2, '.', ',').' ';
+
+            } else {
+
+                $Ma = "\t";
+            }
+
+        } elseif ($manila != 0.00) {
+
+            $Ma = $man.' '. number_format($manila, 2, '.', ',').' ';
+
+        } else {
+
+            $man = '';
+            $Ma ="\t\t".'      ';
+        }
+
+
+        if($cebu != 0.00){
+
+            $Ce = $ceb.' '. number_format($cebu, 2, '.', ',').' ';
+
+        } else {
+
+            $ceb = '';
+            $Ce = "\t\t".'   ';
+        }
+
+        if($davao != 0.00){
+
+            $Da = $dav.' '. number_format($davao, 2, '.', ',').' ';
+
+        } else {
+
+            $dav = '';
+            $Da = "\t\t";
+
+        }
+
+        if($total != 0.00){
+
+            $totals =  number_format($total, 2, '.', ',');
+
+        } else {
+
+            $totals = '';
+        }
+
+
+        return $MaCeDa = $Ma.$Ce.$Da.$this->tab(3).'      '.$totals;
     }
 }
