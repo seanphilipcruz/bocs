@@ -167,6 +167,8 @@
                                         <option>Eight(8)</option>
                                         <option>Nine(9)</option>
                                         <option>Ten(10)</option>
+                                        <option>Eleven(11)</option>
+                                        <option>Twelve(12)</option>
                                         <option>Bonus one(1)</option>
                                         <option>Bonus two(2)</option>
                                         <option>Bonus three(3)</option>
@@ -177,6 +179,14 @@
                                         <option>Bonus eight(8)</option>
                                         <option>Bonus nine(9)</option>
                                         <option>Bonus ten(10)</option>
+                                        <option>Bonus eleven(11)</option>
+                                        <option>Bonus twelve(12)</option>
+                                        <option>Bonus thirteen(13)</option>
+                                        <option>Bonus fourteen(14)</option>
+                                        <option>Bonus fifteen(15)</option>
+                                        <option>Bonus sixteen(16)</option>
+                                        <option>Bonus seventeen(17)</option>
+                                        <option>Bonus eighteen(18)</option>
                                     </select>
                                 </div>
                             </div>
