@@ -594,7 +594,9 @@ class ContractController extends Controller
             $contract_revision->save();
         }
 
-        $contract->update($request->all());
+        $contract->fill($request->all());
+
+        $contract->save();
 
         $employee_id = Auth::user()->id;
 

@@ -13,29 +13,29 @@
         </div>
     </div>
     <div class="my-3"></div>
-    <div class="row">
-        <div class="col-12">
-            <div class="form-group">
-                <label for="executive">Account Executive</label>
-                <select id="executive" name="ae" class="custom-select">
-                    <option value="{{ $contract->Employee->id }}">{{ $contract->Employee->first_name }} {{ $contract->Employee->last_name }}</option>
-                    @forelse($executives as $ae)
-                        <option value="{{ $ae->id }}">{{ $ae->first_name }} {{ $ae->last_name }}</option>
-                    @empty
-                        <option value="{{ $contract->Employee->id }}">{{ $contract->Employee->first_name }} {{ $contract->Employee->last_name }}</option>
-                    @endforelse
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="contract_number">Contract Number</label>
-                <input type="text" id="contract_number" name="contract_number" class="form-control" placeholder="{{ $contract['contract_number'] }}" value="{{ $contract['contract_number'] }}">
-            </div>
-        </div>
-    </div>
-    <div class="my-1"></div>
     <form id="update-contract-form" data-form="Contract" data-request="update" action="{{ route('contracts.update', $contract['id']) }}" method="POST">
         @csrf
         @method('PUT')
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <label for="executive">Account Executive</label>
+                    <select id="executive" name="ae" class="custom-select">
+                        <option value="{{ $contract->Employee->id }}">{{ $contract->Employee->first_name }} {{ $contract->Employee->last_name }}</option>
+                        @forelse($executives as $ae)
+                            <option value="{{ $ae->id }}">{{ $ae->first_name }} {{ $ae->last_name }}</option>
+                        @empty
+                            <option value="{{ $contract->Employee->id }}">{{ $contract->Employee->first_name }} {{ $contract->Employee->last_name }}</option>
+                        @endforelse
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="contract_number">Contract Number</label>
+                    <input type="text" id="contract_number" name="contract_number" class="form-control" placeholder="{{ $contract['contract_number'] }}" value="{{ $contract['contract_number'] }}">
+                </div>
+            </div>
+        </div>
+        <div class="my-1"></div>
         <div class="card">
             <div class="card-body">
                 <label for="station" class="h3">Station</label>
