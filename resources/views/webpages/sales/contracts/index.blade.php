@@ -127,10 +127,10 @@
                     <hr class="my-4">
                     <div class="form-group">
                         <label for="sale_amount">Amount</label>
-                        <input type="text" id="sale_amount" name="amount" class="form-control" placeholder="Amount" onchange="findSalesTotal()">
+                        <input type="number" id="sale_amount" name="amount" class="form-control" placeholder="Amount" min="0" step=".01">
                     </div>
                     <div class="form-group">
-                        <input type="text" id="sale_gross_amount" name="gross_amount" class="form-control" value="Gross Amount" readonly>
+                        <input type="number" id="sale_gross_amount" name="gross_amount" class="form-control" value="Gross Amount" readonly min="0" step=".01">
                     </div>
                 </div>
                 <div class="modal-footer">

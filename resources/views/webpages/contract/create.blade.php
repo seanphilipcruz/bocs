@@ -310,37 +310,37 @@
                             <div class="col-6">
                                 <div class="form-group">
                                     <label for="manila_cash">Manila Cash</label>
-                                    <input type="number" id="manila_cash" name="manila_cash" class="form-control" value="0.00" readonly>
+                                    <input type="number" id="manila_cash" name="manila_cash" class="form-control" value="0.00" min="0" step=".01" readonly>
                                 </div>
                                 <div class="form-group">
                                     <label for="cebu_cash">Cebu Cash</label>
-                                    <input type="number" id="cebu_cash" name="cebu_cash" class="form-control" value="0.00" readonly>
+                                    <input type="number" id="cebu_cash" name="cebu_cash" class="form-control" value="0.00" min="0" step=".01" readonly>
                                 </div>
                                 <div class="form-group">
                                     <label for="davao_cash">Davao Cash</label>
-                                    <input type="number" id="davao_cash" name="davao_cash" class="form-control" value="0.00" readonly>
+                                    <input type="number" id="davao_cash" name="davao_cash" class="form-control" value="0.00" min="0" step=".01" readonly>
                                 </div>
                                 <div class="form-group">
                                     <label for="total_cash">Total Cash</label>
-                                    <input type="number" id="total_cash" name="total_cash" class="form-control" value="0.00" readonly>
+                                    <input type="number" id="total_cash" name="total_cash" class="form-control" value="0.00" min="0" step=".01" readonly>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="form-group">
                                     <label for="manila_ex">Manila Ex Deal</label>
-                                    <input type="number" id="manila_ex" name="manila_ex" class="form-control" value="0.00" readonly>
+                                    <input type="number" id="manila_ex" name="manila_ex" class="form-control" value="0.00" min="0" step=".01" readonly>
                                 </div>
                                 <div class="form-group">
                                     <label for="cebu_ex">Cebu Ex Deal</label>
-                                    <input type="number" id="cebu_ex" name="cebu_ex" class="form-control" value="0.00" readonly>
+                                    <input type="number" id="cebu_ex" name="cebu_ex" class="form-control" value="0.00" min="0" step=".01" readonly>
                                 </div>
                                 <div class="form-group">
                                     <label for="davao_ex">Davao Ex Deal</label>
-                                    <input type="number" id="davao_ex" name="davao_ex" class="form-control" value="0.00" readonly>
+                                    <input type="number" id="davao_ex" name="davao_ex" class="form-control" value="0.00" min="0" step=".01" readonly>
                                 </div>
                                 <div class="form-group">
                                     <label for="total_ex">Total Ex Deal</label>
-                                    <input type="number" id="total_ex" name="total_ex" class="form-control" value="0.00" readonly>
+                                    <input type="number" id="total_ex" name="total_ex" class="form-control" value="0.00" min="0" step=".01" readonly>
                                 </div>
                             </div>
                         </div>
@@ -348,7 +348,7 @@
                             <div class="col-4">
                                 <div class="form-group">
                                     <label for="total_amount">Total Package Cost</label>
-                                    <input type="number" id="total_amount" name="total_amount" class="form-control" value="0.00" readonly>
+                                    <input type="number" id="total_amount" name="total_amount" class="form-control" value="0.00" min="0" step=".01" readonly>
                                 </div>
                             </div>
                         </div>
@@ -408,7 +408,7 @@
                                         <i class="fas fa-percent"></i>
                                     </span>
                                     </div>
-                                    <input type="number" id="package_cost_salesdc" name="package_cost_salesdc" class="form-control" value="0.00">
+                                    <input type="number" id="package_cost_salesdc" name="package_cost_salesdc" class="form-control" value="0.00" min="0" step=".01">
                                 </div>
                             </div>
                         </div>
@@ -431,19 +431,19 @@
                             <div class="col-6">
                                 <div class="form-group">
                                     <label for="manila_prod">Manila Prod</label>
-                                    <input type="number" id="manila_prod" name="manila_prod" class="form-control" value="0.00" readonly>
+                                    <input type="number" id="manila_prod" name="manila_prod" class="form-control" value="0.00" min="0" step=".01" readonly>
                                 </div>
                                 <div class="form-group">
                                     <label for="cebu_prod">Cebu Prod</label>
-                                    <input type="number" id="cebu_prod" name="cebu_prod" class="form-control" value="0.00" readonly>
+                                    <input type="number" id="cebu_prod" name="cebu_prod" class="form-control" value="0.00" min="0" step=".01" readonly>
                                 </div>
                                 <div class="form-group">
                                     <label for="davao_prod">Davao Prod</label>
-                                    <input type="number" id="davao_prod" name="davao_prod" class="form-control" value="0.00" readonly>
+                                    <input type="number" id="davao_prod" name="davao_prod" class="form-control" value="0.00" min="0" step=".01" readonly>
                                 </div>
                                 <div class="form-group">
                                     <label for="total_prod">Total Production Cost</label>
-                                    <input type="number" id="total_prod" name="total_prod" class="form-control" value="0.00" readonly>
+                                    <input type="number" id="total_prod" name="total_prod" class="form-control" value="0.00" min="0" step=".01" readonly>
                                 </div>
                             </div>
                         </div>
