@@ -1,5 +1,5 @@
 <div style="position:absolute; right:70px; top:130px; font-size:12.5px;">{{ $contract['contract_number'] }}</div>
-<div style="position:absolute; right:70px; top:170px; font-size:12.5px;">{{ date('m/d/Y', strtotime($contract['created_at'])) }}</div>
+<div style="position:absolute; right:70px; top:170px; font-size:12.5px;">{{ date('M d, Y', strtotime($contract['created_at'])) }}</div>
 <div style="position:absolute; left:255px; top:205px; font-size:12.5px;">{{ $contract['station'] }}</div>
 <div style="position:absolute; left:310px; top:235px; font-size:12.5px;">{{ $contract->Advertiser->advertiser_name }}</div>
 <div style="position:absolute; left:45px; top:295px; font-size:12.5px;">{{ $contract->Agency->agency_name }}</div>
@@ -40,7 +40,7 @@
 <div style="position:absolute; left:35px; bottom:130px; font-size:12.5px;">{{ $contract->Advertiser->advertiser_name }}</div>
 <div style="position:absolute; right:80px; bottom:130px; font-size:12.5px;">{{ $contract->Agency->agency_name }}</div>
 
-<div style="position:absolute; left:45px; bottom:25px; font-size:12.5px;">{{ date("m/d/Y") }}</div>
+<div style="position:absolute; left:45px; bottom:25px; font-size:12.5px;">{{ date("M d, Y") }}</div>
 <div style="position:absolute; left:150px; bottom:25px; font-size:12.5px;">{{ 'AE / '.$contract->Employee->first_name[0] }}{{ $contract->Employee->middle_name[0] }}{{ $contract->Employee->last_name[0] }}</div>
 
 <div style="position:absolute; right:55px; bottom:25px; font-size:12.5px;">
