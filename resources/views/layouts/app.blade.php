@@ -226,7 +226,7 @@
                             </tr>
                             <tr>
                                 <td><button type="button" class="btn btn-outline-dark"><i class="fas fa-file-alt"></i></button></td>
-                                <td>Add Invoice Number</td>
+                                <td><b>Add Invoice Number</b> or <b>Generate Text in Contracts / Sales</b></td>
                             </tr>
                             <tr>
                                 <td><button type="button" class="btn btn-outline-dark"><i class="fas fa-question"></i></button></td>
