@@ -192,7 +192,7 @@ class ContractController extends Controller
                         "<div class='btn-group'>" .
                         "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark'><i class='fas fa-download'></i></a>" .
                         "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
-                        "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Reactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-check'></i></a>" .
+                        "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Reactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-times'></i></a>" .
                         "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
                         "</div>";
                 } else if($user_level === "2") {
