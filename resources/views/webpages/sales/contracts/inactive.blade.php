@@ -250,29 +250,4 @@
             });
         }
     });
-
-    $(document).on('submit', '#delete-contract-form', function(event) {
-        event.preventDefault();
-        let url = $(this).attr('action');
-        let formData = new FormData(this);
-
-        postAsync(url, formData, 'JSON', beforeSend, onSuccess);
-
-        function beforeSend() {
-            manualToast.fire({
-                icon: 'info',
-                message: 'Please wait ...'
-            });
-        }
-
-        function onSuccess(result) {
-            contractsTable.ajax.reload(null, false);
-            $('.modal').modal('hide');
-
-            Toast.fire({
-                icon: result.status,
-                message: result.message
-            });
-        }
-    })
 </script>

@@ -122,6 +122,7 @@
         $(window).on('keydown', function(event) {
             // Enter key
             if(event.keyCode === 13) {
+                $('button[type="submit"]').attr('disabled');
                 $(this).submit();
             }
 
@@ -157,6 +158,9 @@
         let navigation = $(this).attr('id');
         let url = $(this).attr('href');
 
+        // disable upon clicking
+        $('a[navigation]').addClass('disabled');
+
         if(navigation.includes('logs')) {
             getAsync(url, { "logs": navigation }, 'HTML', beforeSend, onSuccess);
 
@@ -191,6 +195,7 @@
                 container.fadeOut(500, () => {
                     container.empty();
                     container.fadeIn(500, () => {
+                        $('a[navigation]').removeClass('disabled');
                         container.append(result);
                     });
                 });
@@ -215,6 +220,7 @@
                 container.fadeOut(500, () => {
                     container.empty();
                     container.fadeIn(500, () => {
+                        $('a[navigation]').removeClass('disabled');
                         container.append(result);
                     });
                 });
@@ -256,6 +262,7 @@
                 container.fadeOut(500, () => {
                     container.empty();
                     container.fadeIn(500, () => {
+                        $('a[navigation]').removeClass('disabled');
                         container.append(result);
                     });
                 });
@@ -276,11 +283,14 @@
         let archive_type = $(this).attr('data-compare');
         let contract_type = $(this).attr('data-contract');
 
+        // Note: The adding the $('button[type="submit"]').attr('disabled'); whenever opening the modal prevents forms to be submitted, the data has to be loaded first then the $('button[type="submit"]').removeAttr('disabled'); will be fired.
+
         // retrieving data
         if(action_type === 'open') {
             getAsync(url, { "id": data_id, "modal": modal }, 'JSON', beforeSend, onSuccess);
 
             function beforeSend() {
+                $('button[type="submit"]').attr('disabled', 'disabled');
                 manualToast.fire({
                     icon: 'info',
                     title: 'Loading ...'
@@ -314,6 +324,7 @@
 
                     // write a text for confirmation
                     $('#delete-employee-form-body').append('Are you sure to remove <strong>'+result.employee.first_name+' '+result.employee.last_name+'</strong>? All data related to this user will also be deleted and this action is <strong>irreversible</strong>.');
+                    $('button[type="submit"]').removeAttr('disabled');
                 }
 
                 if(result.advertiser) {
@@ -351,6 +362,7 @@
 
                     // writing a text for confirmation
                     $('#delete-agency-form-body').append('Are you sure to delete <strong>'+result.agency.agency_name+'</strong>? All data related to this agency will also be deleted and this action is <strong>irreversible</strong>.');
+                    $('button[type="submit"]').removeAttr('disabled');
                 }
 
                 if(result.contract) {
@@ -392,6 +404,7 @@
 
                     // writing a text for confirmation
                     $('#delete-contract-form-body').append('Are you sure to delete the contract <strong>'+result.contract.bo_number+'</strong>? All data related to this contract will also be deleted and this action is <strong>irreversible</strong>.');
+                    $('button[type="submit"]').removeAttr('disabled');
                 }
 
                 if(result.job) {
@@ -409,6 +422,7 @@
 
                     // writing a text for confirmation
                     $('#delete-job-form-body').append('Are you sure to delete the job description <strong>'+result.job.job_description+'</strong>? All data related to this job description will also be deleted and this action is <strong>irreversible</strong>.');
+                    $('button[type="submit"]').removeAttr('disabled');
                 }
 
                 if(result.sale) {
@@ -438,6 +452,7 @@
                     $('#prod_cost').val(result.sale.contract.prod_cost);
                     $('#prod_cost_vat').val(result.sale.contract.prod_cost_vat);
                     $('#prod_cost_salesdc').val(result.sale.contract.prod_cost_salesdc);
+                    $('button[type="submit"]').removeAttr('disabled');
                 }
             }
         }
@@ -470,6 +485,7 @@
             getAsync(url, { "id": data_id }, 'HTML', beforeSend, onSuccess);
 
             function beforeSend() {
+                $('button[type="submit"]').attr('disabled', 'disabled');
                 manualToast.fire({
                     icon: 'info',
                     title: 'Loading Contract ...',
@@ -489,6 +505,7 @@
                             icon: 'success',
                             title: 'Contract has been loaded',
                         });
+                        $('button[type="submit"]').removeAttr('disabled');
                     });
                 });
             }
@@ -823,6 +840,7 @@
         }
     });
 
+    // the new Find Sales Total function
     $(document).on('change', '#sale_amount', function() {
         let url = '{{ route('find.sales.total') }}';
 
@@ -915,7 +933,6 @@
             }
 
             function onSuccess(result) {
-            $('button[type="submit"]').removeAttr('disabled');
                 $('#main_content').fadeOut(500, () => {
                     $('#main_content').empty();
                     $('#main_content').fadeIn(500, () => {
@@ -927,11 +944,14 @@
                     icon: 'success',
                     title: 'All Time Sales have been loaded'
                 });
+
+                $('button[type="submit"]').removeAttr('disabled');
             }
         } else {
             getAsync(url, { "sort": { "employee_id": executive, "station": station, "agency_id": agency, "agency_name": agency_name, "advertiser_id": advertiser, "advertiser_name": advertiser_name, "month": month, "mo_year": mo_year ,"quarter": quarter, "qr_year": qr_year, "year": year } }, 'HTML', beforeSend, onSuccess);
 
             function beforeSend() {
+                $('button[type="submit"]').attr('disabled', 'disabled');
                 $('#sort-modal').modal('hide');
                 manualToast.fire({
                     icon: 'info',
@@ -952,11 +972,12 @@
                     icon: 'success',
                     title: 'Sales has been sorted'
                 });
+                $('button[type="submit"]').removeAttr('disabled');
             }
         }
     });
 
-    $(document).on('change', '#agency_id', function(event) {
+    $(document).on('change', '#agency_id', function() {
         let url = '{{ route('agencies.show') }}';
         let data_id = $(this).val();
 

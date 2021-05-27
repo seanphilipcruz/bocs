@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Employee;
 use App\EmployeeLogs;
+use App\Job;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -94,7 +95,19 @@ class EmployeeController extends Controller
 
             $employee->update($request->all());
 
-            $this->Log('Updated '. $employee->first_name . '\'s Information', $employee->id, Auth::user()->id);
+            if($employee->wasChanged('first_name')) {
+                $this->Log('Updated '. $employee['first_name'] . '\'s First Name to ' . $request['first_name'], $employee->id, Auth::user()->id);
+            } else if($employee->wasChanged('middle_name')) {
+                $this->Log('Updated '. $employee['first_name'] . '\'s Middle Name to ' . $request['middle_name'], $employee->id, Auth::user()->id);
+            } else if($employee->wasChanged('last_name')) {
+                $this->Log('Updated '. $employee['first_name'] . '\'s Last Name to ' . $request['last_name'], $employee->id, Auth::user()->id);
+            } else if($employee->wasChanged('job_id')) {
+                $this->Log('Updated '. $employee['first_name'] . '\'s Level to ' . Job::where('id', $request['job_id'])->first()->job_description , $employee->id, Auth::user()->id);
+            } else if($employee->wasChanged('is_active')) {
+                $this->Log('Updated '. $employee['first_name'] . '\ Activity  to ' . $request['is_active'], $employee->id, Auth::user()->id);
+            } else if($employee->wasChanged('date_of_birth')) {
+                $this->Log('Updated '. $employee['first_name'] . '\'s Birthday to ' . $request['date_of_birth'], $employee->id, Auth::user()->id);
+            }
 
             return response()->json(['status' => 'success', 'message' => 'An employee\'s information has been updated!']);
         }

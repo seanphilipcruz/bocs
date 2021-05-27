@@ -239,7 +239,6 @@
         postAsync(url, formData, 'HTML', beforeSend, onSuccess);
 
         function beforeSend() {
-            $('button[type="submit"]').attr('disabled', 'disabled');
             manualToast.fire({
                 icon: 'info',
                 title: 'Please wait ...'

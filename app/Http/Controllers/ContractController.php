@@ -440,7 +440,11 @@ class ContractController extends Controller
 
         if($validator->passes()) {
             // creation of contract number
-            $contract_number = date('Ymd') . '-' . $firstName[0] . $middleName[0] . $lastName[0] . '-' . mt_rand(100000, 999999);
+            if(!$middleName) {
+                $contract_number = date('Ymd') . '-' . $firstName[0] . $lastName[0] . '-' . mt_rand(100000, 999999);
+            } else {
+                $contract_number = date('Ymd') . '-' . $firstName[0] . $middleName[0] . $lastName[0] . '-' . mt_rand(100000, 999999);
+            }
 
             // storing the stations array as a string
             $stations = implode($request['station']);

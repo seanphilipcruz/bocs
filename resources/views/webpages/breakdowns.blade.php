@@ -192,6 +192,11 @@
         ]
     });
 
+    $('#update-sale-modal, #update-invoice-modal').on('hide.bs.modal', function() {
+        $('select').prop('selectedIndex', 0);
+        $('#sale_amount, #sale_gross_amount, #invoice_no').val('');
+    });
+
     $(document).on('submit', '#update-sales-form, #update-invoice-form', function(event) {
         event.preventDefault();
         let url = $(this).attr('action');
@@ -200,7 +205,6 @@
         postAsync(url, formData, 'JSON', beforeSend, onSuccess);
 
         function beforeSend() {
-            $('button[type="submit"]').attr('disabled', 'disabled');
             manualToast.fire({
                 icon: 'info',
                 title: 'Please wait ...'

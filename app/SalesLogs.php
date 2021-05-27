@@ -26,10 +26,10 @@ class SalesLogs extends Model
     ];
 
     public function Sales() {
-        return $this->belongsTo(Sales::class);
+        return $this->belongsTo(Sales::class, 'sales_id');
     }
 
     public function Employee() {
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(Employee::class, 'employee_id');
     }
 }

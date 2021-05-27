@@ -21,25 +21,25 @@ class LogsController extends Controller
             $query = $request['logs'];
 
             if(preg_match( '/contract/', $query) === 1) {
-                $logs = AccountExecutiveLogs::all();
+                $logs = AccountExecutiveLogs::with('Contract', 'Employee')->get();
 
                 return view('webpages.logs.contract', compact('logs'));
             }
 
             if(preg_match('/sales/', $query) === 1) {
-                $logs = SalesLogs::all();
+                $logs = SalesLogs::with('Sales', 'Employee')->get();
 
                 return view('webpages.logs.sales_breakdown', compact('logs'));
             }
 
             if(preg_match( '/advertiser/', $query) === 1) {
-                $logs = AgencyAdvertiserLogs::whereNull('agency_id')->get();
+                $logs = AgencyAdvertiserLogs::with('Advertiser', 'Employee')->whereNull('agency_id')->get();
 
                 return view('webpages.logs.advertiser', compact('logs'));
             }
 
             if (preg_match( '/agency/', $query) === 1) {
-                $logs = AgencyAdvertiserLogs::whereNull('advertiser_id')->get();
+                $logs = AgencyAdvertiserLogs::with('Agency', 'Employee')->whereNull('advertiser_id')->get();
 
                 return view('webpages.logs.agency', compact('logs'));
             }

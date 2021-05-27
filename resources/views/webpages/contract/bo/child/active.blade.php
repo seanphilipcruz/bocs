@@ -123,6 +123,11 @@
                 <input type="hidden" id="prod_cost_vat">
                 <input type="hidden" id="prod_cost_salesdc">
                 <input type="hidden" id="bo_number" name="bo_number">
+                <input type="hidden" id="contract_id" name="contract_id">
+                <input type="hidden" id="bo_type" name="bo_type">
+                <input type="hidden" id="agency_id" name="agency_id">
+                <input type="hidden" id="advertiser_id" name="advertiser_id">
+                <input type="hidden" id="employee_id" name="ae">
                 <div class="modal-body">
                     <div class="mb-3">Broadcast Order Number: <span id="bo_number_text" class="text-primary">undefined</span></div>
                     <div class="form-group">
@@ -227,7 +232,12 @@
         ]
     });
 
-    $(document).on('submit', '#add-sales-breakdown-form', function(event) {
+    $('#add-sales-breakdown-modal, #update-invoice-modal').on('hide.bs.modal', function() {
+        $('select').prop('selectedIndex', 0);
+        $('#sale_amount, #sale_gross_amount, #invoice_no').val('');
+    });
+
+    $(document).on('submit', '#add-sales-breakdown-form, #update-invoice-form', function(event) {
         event.preventDefault();
 
         let url = $(this).attr('action');
@@ -239,22 +249,25 @@
         function beforeSend() {
             manualToast.fire({
                 icon: 'info',
-                message: 'Please wait ...'
+                title: 'Please wait ...'
             });
         }
 
         function onSuccess(result) {
+            $('button[type="submit"]').removeAttr('disabled');
             contractsTable.ajax.reload(null, false);
             $('.modal').modal('hide');
+            $('select').prop('selectedIndex', 0);
+            $('#sale_amount, #sale_gross_amount').val('');
 
             Toast.fire({
                 icon: result.status,
-                message: "A new " +formType+ " has been saved!",
+                title: "A new " +formType+ " has been saved!",
             });
         }
     });
 
-    $(document).on('submit', '#delete-contract-form', function(event) {
+    $(document).on('submit', '#contract-status-form, #delete-contract-form', function(event) {
         event.preventDefault();
         let url = $(this).attr('action');
         let formData = new FormData(this);
@@ -264,18 +277,19 @@
         function beforeSend() {
             manualToast.fire({
                 icon: 'info',
-                message: 'Please wait ...'
+                title: 'Please wait ...'
             });
         }
 
         function onSuccess(result) {
+            $('button[type="submit"]').removeAttr('disabled');
             contractsTable.ajax.reload(null, false);
             $('.modal').modal('hide');
 
             Toast.fire({
                 icon: result.status,
-                message: result.message
+                title: result.message
             });
         }
-    })
+    });
 </script>

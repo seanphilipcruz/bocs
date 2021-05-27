@@ -50,6 +50,36 @@
     </div>
 </div>
 
+<!-- Modals -->
+<div class="modal fade" id="update-invoice-modal" tabindex="-1" role="dialog" aria-labelledby="update-invoice-modal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Invoice Number</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="update-invoice-form" data-form="Invoice" data-request="update" action="" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="invoice_no">Invoice Number</label>
+                        <input type="text" id="invoice_no" name="invoice_no" class="form-control" placeholder="Invoice Number">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-outline-dark">Save</button>
+                        <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="contract-status-modal" tabindex="-1" role="dialog" aria-labelledby="contract-status-modal" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -229,12 +259,12 @@
         ]
     });
 
-    $('#add-sales-breakdown-modal').on('hide.bs.modal', function() {
+    $('#add-sales-breakdown-modal, #update-invoice-modal').on('hide.bs.modal', function() {
         $('select').prop('selectedIndex', 0);
         $('#sale_amount, #sale_gross_amount').val('');
     });
 
-    $(document).on('submit', '#add-sales-breakdown-form', function(event) {
+    $(document).on('submit', '#add-sales-breakdown-form, #update-invoice-form', function(event) {
         event.preventDefault();
 
         let url = $(this).attr('action');
@@ -244,7 +274,6 @@
         postAsync(url, formData, 'JSON', beforeSend, onSuccess);
 
         function beforeSend() {
-            $('button[type="submit"]').attr('disabled', 'disabled');
             manualToast.fire({
                 icon: 'info',
                 title: 'Please wait ...'
@@ -265,7 +294,7 @@
         }
     });
 
-    $(document).on('submit', '#delete-contract-form', function(event) {
+    $(document).on('submit', '#contract-status-form, #delete-contract-form', function(event) {
         event.preventDefault();
         let url = $(this).attr('action');
         let formData = new FormData(this);
@@ -273,7 +302,6 @@
         postAsync(url, formData, 'JSON', beforeSend, onSuccess);
 
         function beforeSend() {
-            $('button[type="submit"]').attr('disabled', 'disabled');
             manualToast.fire({
                 icon: 'info',
                 title: 'Please wait ...'
@@ -290,5 +318,5 @@
                 title: result.message
             });
         }
-    })
+    });
 </script>

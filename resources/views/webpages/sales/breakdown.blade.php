@@ -45,6 +45,36 @@
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="update-invoice-modal" tabindex="-1" role="dialog" aria-labelledby="update-invoice-modal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Invoice Number</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="update-invoice-form" data-form="Invoice" data-request="update" action="" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="invoice_no">Invoice Number</label>
+                        <input type="text" id="invoice_no" name="invoice_no" class="form-control" placeholder="Invoice Number">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-outline-dark">Save</button>
+                        <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="update-sale-modal" tabindex="-1" role="dialog" aria-labelledby="update-sale-modal" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -173,6 +203,11 @@
         ]
     });
 
+    $('#update-sale-modal').on('hide.bs.modal', function() {
+        $('select').prop('selectedIndex', 0);
+        $('#sale_amount, #sale_gross_amount').val('');
+    });
+
     $(document).on('submit', '#update-sales-forms', function(event) {
         event.preventDefault();
         let url = $(this).attr('action');
@@ -188,6 +223,7 @@
         }
 
         function onSuccess(result) {
+            $('button[type="submit"]').removeAttr('disabled');
             salesTable.ajax.reload(null, false);
             $('.modal').modal('hide');
 

@@ -198,4 +198,39 @@
             [ 0, 'desc' ],
         ]
     });
+
+    $('#add-sales-breakdown-modal, #update-invoice-modal').on('hide.bs.modal', function() {
+        $('select').prop('selectedIndex', 0);
+        $('#sale_amount, #sale_gross_amount').val('');
+    });
+
+    $(document).on('submit', '#add-sales-breakdown-form, #update-invoice-form', function(event) {
+        event.preventDefault();
+
+        let url = $(this).attr('action');
+        let formData = new FormData(this);
+        let formType = $(this).attr('data-form');
+
+        postAsync(url, formData, 'JSON', beforeSend, onSuccess);
+
+        function beforeSend() {
+            manualToast.fire({
+                icon: 'info',
+                title: 'Please wait ...'
+            });
+        }
+
+        function onSuccess(result) {
+            $('button[type="submit"]').removeAttr('disabled');
+            contractsTable.ajax.reload(null, false);
+            $('.modal').modal('hide');
+            $('select').prop('selectedIndex', 0);
+            $('#sale_amount, #sale_gross_amount').val('');
+
+            Toast.fire({
+                icon: result.status,
+                title: "A new " +formType+ " has been saved!",
+            });
+        }
+    });
 </script>
