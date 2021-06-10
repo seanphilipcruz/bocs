@@ -10,7 +10,7 @@
     <div class="justify-content-center">
         <div class="card d-none d-sm-none d-md-none d-lg-block d-xl-block">
             <div class="card-header">
-                <div class="text-center">
+                <div id="gross_sales_amount" class="text-center">
                     {{ date('F') }} Gross Sales: <div class="text-primary h3">{{ $gross_sales }}</div>
                 </div>
             </div>
@@ -48,6 +48,20 @@
 
 <script>
     monthlySR = $('#monthlySalesReportTable').DataTable({
+        ajax: {
+            url: '{{ route('sales.reports') }}',
+            dataSrc: 'sales_reports',
+            data: {
+                'switch': 'monthly',
+                'refresh': true
+            }
+        },
+        columns: [
+            { data: 'year' },
+            { data: 'month' },
+            { data: 'station' },
+            { data: 'gross_sales' },
+        ],
         order: [
             [ 0, 'desc' ],
             [ 1, 'desc']
@@ -56,5 +70,15 @@
 
     setInterval(() => {
         monthlySR.ajax.reload(null, false);
-    }, 3000);
+
+        getAsync('{{ route('sales.reports') }}', { 'switch': 'monthly', 'refresh': true }, 'JSON', beforeSend, onSuccess);
+
+        function beforeSend() {
+
+        }
+
+        function onSuccess(result) {
+            $('#gross_sales_amount').empty().append(result.gross_sales);
+        }
+    }, 5500);
 </script>

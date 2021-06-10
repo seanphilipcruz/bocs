@@ -48,6 +48,20 @@
 
 <script>
     executiveSR = $('#monthlySalesReportTable').DataTable({
+        ajax: {
+            url: '{{ route('sales.reports') }}',
+            dataSrc: '',
+            data: {
+                'switch': 'executive',
+                'refresh': true,
+            }
+        },
+        columns: [
+            { data: 'year' },
+            { data: 'month' },
+            { data: 'name' },
+            { data: 'gross_sales' }
+        ],
         order: [
             [ 0, 'desc' ],
             [ 1, 'desc']

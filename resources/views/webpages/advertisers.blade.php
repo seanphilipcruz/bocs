@@ -134,6 +134,7 @@
 </div>
 
 <script type="text/javascript">
+    $(document).off('submit');
     // datatable
     advertisersTable = $('#advertisersTable').DataTable({
         ajax: {

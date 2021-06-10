@@ -12,7 +12,7 @@
 </div>
 <div class="my-3"></div>
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
         <div class="card">
             <div class="card-body">
                 <div id="chart-container-small">
@@ -21,7 +21,10 @@
             </div>
         </div>
     </div>
-    <div class="col-md-6">
+</div>
+<div class="my-3"></div>
+<div class="row">
+    <div class="col-md-12">
         <div class="card">
             <div class="card-body">
                 <div id="chart-container-small">
@@ -83,7 +86,6 @@
     cebuExecutiveSales = {!! json_encode($data['cebuAESales']) !!};
 
     let cebuAEChartConfig = {
-        indexAxis: 'y',
         scales: {
             y: {
                 beginAtZero: true,
@@ -180,7 +182,7 @@
     }
 
     cebuYearlySalesChart = new Chart(cebuYearlySales, {
-        type: 'pie',
+        type: 'bar',
         data: cebuYearlySalesDataset,
         options: cebuYearlySalesConfig
     });

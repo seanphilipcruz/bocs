@@ -213,6 +213,7 @@
 </div>
 
 <script>
+    $(document).off('submit');
     jobsTable = $('#jobsTable').DataTable({
         ajax: {
             url: '{{ route('jobs') }}',

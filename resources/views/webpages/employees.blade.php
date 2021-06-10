@@ -268,6 +268,7 @@
 </div>
 
 <script>
+    $(document).off('submit');
     // datatable
     employeesTable = $('#employeesTable').DataTable({
         ajax: {

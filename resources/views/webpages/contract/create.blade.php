@@ -611,6 +611,7 @@
 </div>
 
 <script>
+    $(document).off('submit');
     // for agency / advertiser select
     function fetchLatest(url, data) {
         getAsync(url, data, 'JSON', beforeSend, onSuccess);
@@ -657,6 +658,69 @@
                 fetchLatest('{{ route('agencies') }}', { "select": "select" });
             } else {
                 fetchLatest('{{ route('advertisers') }}', { "select": "select" });
+            }
+        }
+    });
+
+    // creating and updating the contract
+    $(document).on('submit', '#add-contract-form', function(event) {
+        event.preventDefault();
+
+        let url = $(this).attr('action');
+        let home_url = '{{ route('contracts') }}';
+        let formData = new FormData(this);
+        let formType = $(this).attr('data-form');
+        let requestType = $(this).attr('data-request');
+
+        postAsync(url, formData, 'HTML' ? 'HTML' : 'JSON', beforeSend, onSuccess);
+
+        function beforeSend() {
+            $('button[type="submit"]').attr('disabled', 'disabled');
+        }
+
+        function onSuccess(result) {
+            $('button[type="submit"]').removeAttr('disabled');
+
+            if(requestType == "update") {
+                getAsync(home_url, { 'navigation': 'navigation' }, 'HTML', beforeSend, onSuccess);
+
+                function beforeSend() {
+
+                }
+
+                function onSuccess(result) {
+                    $('#main_content').fadeOut(500, () => {
+                        $('#main_content').empty();
+                        $('#main_content').fadeIn(500, () => {
+                            $('#main_content').append(result);
+                        });
+                    });
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: formType+' has been updated!'
+                    });
+                }
+            } else {
+                getAsync(home_url, { 'navigation': 'navigation' }, 'HTML', beforeSend, onSuccess);
+
+                function beforeSend() {
+
+                }
+
+                function onSuccess(result) {
+                    $('#main_content').fadeOut(500, () => {
+                        $('#main_content').empty();
+                        $('#main_content').fadeIn(500, () => {
+                            $('#main_content').append(result);
+                        });
+                    });
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'A new '+formType+' has been saved!'
+                    });
+                }
             }
         }
     });

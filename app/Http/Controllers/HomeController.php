@@ -7,6 +7,7 @@ use App\Agency;
 use App\Contract;
 use App\Employee;
 use App\Sales;
+use DateTime;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -31,7 +32,7 @@ class HomeController extends Controller
             ->get();
 
         foreach ($manilaSales as $sales) {
-            $date = \DateTime::createFromFormat('!m', $sales->month);
+            $date = DateTime::createFromFormat('!m', $sales->month);
 
             $sales->month = $date->format('F') . ' ' . $sales->year;
         }
@@ -62,7 +63,23 @@ class HomeController extends Controller
             ->get();
 
         $manilaYears = $manilaYearlySales->pluck('year')->toArray();
+
         $manilaYearlyGrossSales = $manilaYearlySales->pluck('gross_sales')->toArray();
+        // end
+
+        // AE Sales in Main Chart
+        $monthlyAESales = Sales::with('Employee')->selectRaw('month, year, sum(gross_amount) as gross_sales, ae')
+            ->orderBy('year', 'desc')
+            ->orderBy('month')
+            ->where('year', '=', date('Y'))
+            ->groupBy(['month', 'year', 'ae'])
+            ->get();
+
+        foreach ($monthlyAESales as $sales) {
+            $sales->name = $sales->Employee->first_name . ' ' . $sales->Employee->last_name;
+        }
+
+        $accountExecutives = $monthlyAESales->groupBy('name');
         // end
 
 
@@ -76,7 +93,7 @@ class HomeController extends Controller
             ->get();
 
         foreach ($cebuSales as $sales) {
-            $date = \DateTime::createFromFormat('!m', $sales->month);
+            $date = DateTime::createFromFormat('!m', $sales->month);
 
             $sales->month = $date->format('F');
         }
@@ -121,7 +138,7 @@ class HomeController extends Controller
             ->get();
 
         foreach ($davaoSales as $sales) {
-            $date = \DateTime::createFromFormat('!m', $sales->month);
+            $date = DateTime::createFromFormat('!m', $sales->month);
 
             $sales->month = $date->format('F');
         }
@@ -162,6 +179,9 @@ class HomeController extends Controller
             'manilaAESales' => $executiveSales,
             'manilaYears' => $manilaYears,
             'manilaYearlyGrossSales' => $manilaYearlyGrossSales,
+            'manilaAccountExecutives' => $monthlyAESales,
+            'individualAccountExecutives' => $accountExecutives,
+            'manilaYearlySales' => $manilaYearlySales,
             // for cebu data
             'cebuMonths' => $cebuMonths,
             'cebuGrossSales' => $cebuGrossSales,
@@ -178,8 +198,7 @@ class HomeController extends Controller
             'davaoYearlyGrossSales' => $davaoYearlyGrossSales,
         ];
 
-        // get the provincial sales
-
+        // dd($data['individualAESales']);
 
         return view('home', compact('users', 'contracts', 'agencies', 'advertisers', 'data'));
     }

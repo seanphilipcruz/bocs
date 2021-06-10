@@ -223,6 +223,21 @@
 
 <script>
     srTable = $('#salesReportTable').DataTable({
+        ajax: {
+            url: '{{ route('sales.reports') }}',
+            dataSrc: '',
+        },
+        columns: [
+            { data: 'year' },
+            { data: 'month' },
+            { data: 'contract.contract_number' },
+            { data: 'contract.bo_number' },
+            { data: 'contract.advertiser.advertiser_name' },
+            { data: 'station' },
+            { data: 'type' },
+            { data: 'amount' },
+            { data: 'gross_amount' }
+        ],
         order: [
             [ 0, 'desc' ],
             [ 1, 'desc' ]
@@ -231,5 +246,5 @@
 
     setInterval(() => {
         srTable.ajax.reload(null, false);
-    }, 3000);
+    }, 5500);
 </script>

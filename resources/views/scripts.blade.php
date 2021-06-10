@@ -430,6 +430,8 @@
 
                     // setting action urls
                     $('#update-invoice-form, #update-sales-form').attr('action', '{{ url('sales/update') }}' + '/' + result.sale.id);
+                    // for deleting Sales Breakdown Note: Password is in the Controller, method is public function delete() { ... }
+                    $('#delete-sales-form').attr('action', '{{ url('sales/delete') }}' + '/' + result.sale.id);
 
                     // putting the result data in the input fields in update
                     $('#bo_number_text').text(result.sale.contract.bo_number);
@@ -452,6 +454,7 @@
                     $('#prod_cost').val(result.sale.contract.prod_cost);
                     $('#prod_cost_vat').val(result.sale.contract.prod_cost_vat);
                     $('#prod_cost_salesdc').val(result.sale.contract.prod_cost_salesdc);
+
                     $('button[type="submit"]').removeAttr('disabled');
                 }
             }
@@ -990,69 +993,6 @@
         function onSuccess(result) {
             $('#kbp_accreditation').empty();
             $('#kbp_accreditation').append(result.agency.kbp_status);
-        }
-    });
-
-    // creating and updating the contract
-    $(document).on('submit', '#add-contract-form, #update-contract-form', function(event) {
-        event.preventDefault();
-
-        let url = $(this).attr('action');
-        let home_url = '{{ route('contracts') }}';
-        let formData = new FormData(this);
-        let formType = $(this).attr('data-form');
-        let requestType = $(this).attr('data-request');
-
-        postAsync(url, formData, 'HTML' ? 'HTML' : 'JSON', beforeSend, onSuccess);
-
-        function beforeSend() {
-            $('button[type="submit"]').attr('disabled', 'disabled');
-        }
-
-        function onSuccess(result) {
-            $('button[type="submit"]').removeAttr('disabled');
-
-            if(requestType == "update") {
-                getAsync(home_url, { 'navigation': 'navigation' }, 'HTML', beforeSend, onSuccess);
-
-                function beforeSend() {
-
-                }
-
-                function onSuccess(result) {
-                    $('#main_content').fadeOut(500, () => {
-                        $('#main_content').empty();
-                        $('#main_content').fadeIn(500, () => {
-                            $('#main_content').append(result);
-                        });
-                    });
-
-                    Toast.fire({
-                        icon: 'success',
-                        title: formType+' has been updated!'
-                    });
-                }
-            } else {
-                getAsync(home_url, { 'navigation': 'navigation' }, 'HTML', beforeSend, onSuccess);
-
-                function beforeSend() {
-
-                }
-
-                function onSuccess(result) {
-                    $('#main_content').fadeOut(500, () => {
-                        $('#main_content').empty();
-                        $('#main_content').fadeIn(500, () => {
-                            $('#main_content').append(result);
-                        });
-                    });
-
-                    Toast.fire({
-                        icon: 'success',
-                        title: 'A new '+formType+' has been saved!'
-                    });
-                }
-            }
         }
     });
 

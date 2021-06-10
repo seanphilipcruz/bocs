@@ -174,6 +174,7 @@
 </div>
 
 <script>
+    $(document).off('submit');
     contractSalesTable = $('#contractSalesTable').DataTable({
         ajax: {
             url: '{{ route('sales') }}',

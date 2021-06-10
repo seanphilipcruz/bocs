@@ -6,6 +6,7 @@ use App\Advertiser;
 use App\Agency;
 use App\Contract;
 use App\Employee;
+use App\EmployeeLogs;
 use App\Sales;
 use App\SalesLogs;
 use App\SalesRevision;
@@ -14,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Validator;
 
@@ -573,15 +575,39 @@ class SalesController extends Controller
         return response()->json(['status' => 'error', 'message' => $validator->errors()->all()], 400);
     }
 
-    public function delete($id) {
+    public function delete($id, Request $request) {
         $sale = Sales::with('Contract')->findOrFail($id);
 
-        $user_level = Auth::user()->Employee->Job->level;
+        $user_level = Auth::user()->Job->level;
 
         if($user_level === '0' || $user_level === '1') {
-            $sale->delete();
+            $confirm_password = Hash::check($request['password'], $this->password());
 
-            return response()->json(['status' => 'success', 'message' => 'A sale has been deleted!']);
+            if($confirm_password) {
+                $log = new EmployeeLogs([
+                    'action' => 'Removed Sale from '. $sale->Contract->contract_number .' with a BO Number of '. $sale->Contract->bo_number .' and with an amount of '. $sale->amount,
+                    'employee_id' => Auth::user()->id,
+                    'user_id' => Auth::user()->id,
+                    'job_id' => Auth::user()->Job->id
+                ]);
+
+                $log->save();
+
+                $sale->delete();
+
+                return response()->json(['status' => 'success', 'message' => 'A sale has been deleted!']);
+            }
+
+            $log = new EmployeeLogs([
+                'action' => 'Attempted to remove a sale from '. $sale->Contract->contract_number .' with a BO Number of '. $sale->Contract->bo_number .' and with an amount of '. $sale->amount,
+                'employee_id' => Auth::user()->id,
+                'user_id' => Auth::user()->id,
+                'job_id' => Auth::user()->Job->id
+            ]);
+
+            $log->save();
+
+            return response()->json(['status' => 'error', 'message' => 'Password is incorrect!'], 400);
         }
 
         return response()->json(['status' => 'error', 'message' => 'You don\'t have the administrative rights!'], 400);
@@ -604,6 +630,9 @@ class SalesController extends Controller
                     "<div class='btn-group'>" .
                     "   <a href='#update-sale-modal' data-link='".route('sales.show')."' data-action='open' data-id='".$breakdowns->id."' modal='true' tooltip title='Update Sales Breakdown' data-placement='Bottom' data-toggle='modal' class='btn btn-outline-dark'>" .
                     "       <i class='fas fa-edit'></i>" .
+                    "   </a>" .
+                    "   <a href='#delete-sale-modal' data-link='".route('sales.show')."' data-action='open' data-id='".$breakdowns->id."' modal='true' tooltip title='Remove Sales Breakdown' data-placement='Bottom' data-toggle='modal' class='btn btn-outline-dark'>" .
+                    "       <i class='fas fa-trash-alt'></i>" .
                     "   </a>" .
                     "</div>";
             } else if($user_level === "1") {
@@ -807,6 +836,12 @@ class SalesController extends Controller
 
                 $gross_sales = $sales_report->where('month', date('m'))->where('year', date('Y'))->pluck('gross_sales')->first();
 
+                if($request['refresh']) {
+                    $gross_sales = date('F') . ' Gross Sales: <div class="text-primary h3">' . $gross_sales . '</div>';
+
+                    return response()->json(['sales_reports' => $sales_report, 'gross_sales' => $gross_sales]);
+                }
+
                 return view('webpages.sales_monthly', compact('sales_report', 'gross_sales'));
             }
 
@@ -823,16 +858,34 @@ class SalesController extends Controller
 
                 $gross_sales = number_format(array_sum(Sales::all()->pluck('gross_amount')->toArray()), 2);
 
+                if($request['refresh']) {
+                    foreach($sales_report as $sales) {
+                        $sales->name = $sales->Employee->first_name . ' ' . $sales->Employee->last_name;
+                    }
+
+                    return $sales_report;
+                }
+
                 return view('webpages.sales_executive', compact('sales_report', 'gross_sales'));
             }
 
             if($request['sort']) {
+                if($request['refresh']) {
+                    return $sales_report;
+                }
+
                 return view('webpages.sales_report', compact('sales_report','gross_sales', 'month', 'advertisers', 'agencies', 'executives', 'yearly_sales'));
             }
 
             if($request['navigation']) {
+                if($request['refresh']) {
+                    return $sales_report;
+                }
+
                 return view('webpages.sales_report', compact('sales_report','gross_sales', 'month', 'advertisers', 'agencies', 'executives', 'yearly_sales'));
             }
+
+            return $sales_report;
         }
 
         return response()->json(['status' => 'error', 'message' => 'Webpage you were looking for weren\'t found'], 400);

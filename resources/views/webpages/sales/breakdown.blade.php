@@ -178,7 +178,44 @@
     </div>
 </div>
 
+
+<div class="modal fade" id="delete-sale-modal" tabindex="-1" role="dialog" aria-labelledby="delete-sale-modal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Remove Sale?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="delete-sales-form" method="POST" action="">
+                @csrf
+                @method('DELETE')
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="text-center text-danger">To proceed, please enter the password</div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" id="password" name="password" class="form-control" placeholder="Password">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-outline-dark">Confirm</button>
+                        <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
+    $(document).off('submit');
+
     salesBreakdownTable = $('#salesBreakdownTable').DataTable({
         ajax: {
             url: '{{ route('sales.show.breakdowns') }}',
@@ -208,7 +245,7 @@
         $('#sale_amount, #sale_gross_amount').val('');
     });
 
-    $(document).on('submit', '#update-sales-forms', function(event) {
+    $(document).on('submit', '#update-sales-form, #delete-sales-form', function(event) {
         event.preventDefault();
         let url = $(this).attr('action');
         let formData = new FormData(this);
@@ -224,8 +261,9 @@
 
         function onSuccess(result) {
             $('button[type="submit"]').removeAttr('disabled');
-            salesTable.ajax.reload(null, false);
+            salesBreakdownTable.ajax.reload(null, false);
             $('.modal').modal('hide');
+            $('#password').val('');
 
             Toast.fire({
                 icon: result.status,

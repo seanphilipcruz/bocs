@@ -169,6 +169,7 @@
 </div>
 
 <script type="text/javascript">
+    $(document).off('submit');
     // datatable
     agenciesTable = $('#agenciesTable').DataTable({
         ajax: {
