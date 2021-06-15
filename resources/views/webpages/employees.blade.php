@@ -18,6 +18,7 @@
                         <th>First</th>
                         <th>Username</th>
                         <th>Job</th>
+                        <th>Color</th>
                         <th>Status</th>
                         <th>Options</th>
                     </tr>
@@ -151,6 +152,10 @@
                             <label for="update_username">Username</label>
                             <input type="email" id="update_username" name="username" class="form-control" placeholder="Username">
                         </div>
+                        <div class="col">
+                            <label for="update_color">User Color</label>
+                            <input type="color" id="update_color" name="color" class="form-control">
+                        </div>
                     </div>
                     <div class="my-3"></div>
                     <div class="row">
@@ -281,11 +286,12 @@
             { data: 'first_name' },
             { data: 'username' },
             { data: 'job.job_description' },
+            { data: 'color' },
             { data: 'status' },
             { data: 'options' }
         ],
         order: [
-            [ 5, 'asc' ]
+            [ 6, 'asc' ]
         ]
     });
 

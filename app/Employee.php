@@ -23,6 +23,7 @@ class Employee extends Authenticatable
         'middle_name',
         'date_of_birth',
         'nickname',
+        'color',
         'username',
         'password',
         'job_id',

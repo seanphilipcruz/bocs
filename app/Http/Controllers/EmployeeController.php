@@ -24,6 +24,8 @@ class EmployeeController extends Controller
                 $employee->status = "<div class='badge badge-danger text-center'>Inactive</div>";
             }
 
+            $employee->color = "<i class='fas fa-circle' style='color: ".$employee['color'].";' title='".$employee['color']."'></i>";
+
             $employee->options = "" .
                 "<div class='btn-group'>" .
                 "   <a href='#update-employee-modal' data-action='open' data-link='".route('employees.show')."' data-id='".$employee->id."' tooltip title='Update Employee' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
@@ -44,7 +46,15 @@ class EmployeeController extends Controller
 
     public function show(Request $request) {
         if($request->ajax()) {
-            $employee = Employee::with('Job')->findOrFail($request->id);
+            $employee = Employee::with('Job')->findOrFail($request['id']);
+
+            if($employee['color'] != null || $employee['color'] === "") {
+                $hex_color = $this->hexToRGB($employee['color']);
+
+                $color = 'rgb('.implode(",", $hex_color).')';
+
+                $employee['rgb_color'] = $color;
+            }
 
             return response()->json(['employee' => $employee]);
         }
@@ -69,7 +79,9 @@ class EmployeeController extends Controller
 
             $request['password'] = Hash::make(date('mdy', strtotime($request['date_of_birth'])));
 
-            Employee::create($request->all());
+            $employee = new Employee($request->all());
+
+            $employee->save();
 
             $latest_employee = Employee::latest()->get()->first();
 
@@ -87,6 +99,7 @@ class EmployeeController extends Controller
            'first_name' => 'required',
            'date_of_birth' => 'required',
            'job_id' => 'required',
+           'color' => 'required',
            'is_active' => 'required'
         ]);
 
@@ -200,16 +213,5 @@ class EmployeeController extends Controller
         }
 
         return response()->json(['status' => 'error', 'message' => $validator->errors()->all()],400);
-    }
-
-    private function Log($action, $employee_id, $user_id) {
-        if($action && $employee_id && $user_id) {
-            EmployeeLogs::create([
-                'action' => $action,
-                'employee_id' => $employee_id,
-                'user_id' => $user_id,
-                'job_id' => Auth::user()->job_id
-            ]);
-        }
     }
 }

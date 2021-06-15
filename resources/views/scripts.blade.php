@@ -317,6 +317,7 @@
                     $('#update_job_id').val(result.employee.job.id);
                     $('#update_username').val(result.employee.username);
                     $('#update_birthdate').val(result.employee.date_of_birth);
+                    $('#update_color').val(result.employee.color);
                     $('#is_active').val(result.employee.is_active);
 
                     // putting the employee id in change password modal
@@ -375,12 +376,14 @@
 
                     if(result.contract.is_active === 1) {
                         $('#contract-status-title').text('Deactivate Contract?');
+                        $('#contract_status').val('0');
                         $('#contract-status-form-body').html('Are you sure to deactivate the contract with the contract number of ' + result.contract.contract_number + '?');
                         $('#contract-status-button').text('Deactivate');
                     }
 
                     if(result.contract.is_active === 0) {
                         $('#contract-status-title').text('Reactivate Contract?');
+                        $('#contract_status').val('1');
                         $('#contract-status-form-body').html('Are you sure to reactivate the contract with the contract number of ' + result.contract.contract_number + '?')
                         $('#contract-status-button').text('Reactivate');
                     }

@@ -9,13 +9,11 @@ use App\Contract;
 use App\ContractRevision;
 use App\Employee;
 use Auth;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Support\Str;
-use Storage;
 
 class ContractController extends Controller
 {
@@ -24,6 +22,236 @@ class ContractController extends Controller
         $user_level = Auth::user()->Job->level;
 
         if($user_level === "2") {
+            // filtering the datatables by year
+            if($request['filter'] == true) {
+                $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'normal')
+                    ->where('is_active', '=', '1')
+                    ->where('ae', '=', $executive)
+                    ->whereYear('created_at', $request['year'])
+                    ->orderBy('created_at')
+                    ->get();
+
+                if($request['inactive'] == true) {
+                    $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                        ->where('bo_type', '=', 'normal')
+                        ->where('is_active', '=', '0')
+                        ->where('ae', '=', $executive)
+                        ->whereYear('created_at', $request['year'])
+                        ->orderBy('created_at')
+                        ->get();
+                }
+
+                if($request['parent'] == true) {
+                    $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                        ->where('bo_type', '=', 'parent')
+                        ->where('is_active', '=', '1')
+                        ->where('ae', '=', $executive)
+                        ->whereYear('created_at', $request['year'])
+                        ->orderBy('created_at')
+                        ->get();
+                }
+
+                if($request['inactive_parent'] == true) {
+                    $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                        ->where('bo_type', '=', 'parent')
+                        ->where('is_active', '=', '0')
+                        ->where('ae', '=', $executive)
+                        ->whereYear('created_at', $request['year'])
+                        ->orderBy('created_at')
+                        ->get();
+                }
+
+                if($request['child_bo'] == true) {
+                    $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                        ->where('bo_type', '=', 'child')
+                        ->where('is_active', '=', '1')
+                        ->where('ae', '=', $executive)
+                        ->whereYear('created_at', $request['year'])
+                        ->orderBy('created_at')
+                        ->get();
+                }
+
+                if($request['inactive_child_bo'] == true) {
+                    $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                        ->where('bo_type', '=', 'child')
+                        ->where('is_active', '=', '0')
+                        ->where('ae', '=', $executive)
+                        ->whereYear('created_at', $request['year'])
+                        ->orderBy('created_at')
+                        ->get();
+                }
+
+                foreach ($contracts as $contract) {
+                    // getting the radio stations by breaking down the data from the string
+                    $manila = preg_match('/DWRX Manila;/', $contract['station']);
+                    $another_manila_alias = preg_match('/DWRX 93.1 Manila;/', $contract['station']);
+                    $cebu = preg_match('/DYBT Cebu;/', $contract['station']);
+                    $another_cebu_alias = preg_match('/DYBT 105.9 Cebu;/', $contract['station']);
+                    $davao = preg_match('/DXBT Davao;/', $contract['station']);
+                    $another_davao_alias = preg_match('/DXBT 99.5 Davao;/', $contract['station']);
+
+                    $stations = [];
+
+                    if($manila === 1 || $another_manila_alias === 1) {
+                        array_push($stations, '<div class="badge badge-primary text-center">Manila</div>');
+                    }
+
+                    if($cebu === 1 || $another_cebu_alias) {
+                        array_push($stations, '<div class="badge badge-warning text-center">Cebu</div>');
+                    }
+
+                    if($davao === 1 || $another_davao_alias) {
+                        array_push($stations, '<div class="badge badge-dark text-center">Davao</div>');
+                    }
+
+                    $contract['station'] = $stations;
+
+                    if ($contract->is_printed === 1) {
+                        $contract->print_status = "<div class='badge badge-success text-center'>Printed</div>";
+                    } else if ($contract->is_printed === 0) {
+                        $contract->print_status = "<div class='badge badge-danger text-center'>Pending</div>";
+                    }
+
+                    if($contract->advertiser_id === 0) {
+                        $contract->advertiser_name = '<div class="badge badge-danger text-center">Undefined</div>';
+                    } else {
+                        $contract->advertiser_name = $contract->Advertiser->advertiser_name;
+                    }
+
+                    if($contract->agency_id === 0) {
+                        $contract->agency_name = '<div class="badge badge-danger text-center">Undefined</div>';
+                    } else {
+                        $contract->agency_name = $contract->Agency->agency_name;
+                    }
+
+                    $contract->short_contract_number = Str::limit($contract->contract_number, '20');
+
+                    $contract->short_bo_number = Str::limit($contract->bo_number, '15');
+
+                    if($contract->bo_type == "child") {
+                        $contract->short_parent_bo = Str::limit($contract->parent_bo, '15');
+                    }
+
+                    $contract->employee_name = $contract->Employee->first_name[0] . $contract->Employee->middle_name[0] . $contract->Employee->last_name[0];
+
+                    if ($contract->is_active === 1) {
+                        $contract->status = "<div class='badge badge-success text-center'>Active</div>";
+
+                        if($user_level === "1") {
+                            $contract->options = "" .
+                                "<div class='btn-group'>" .
+                                "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark'><i class='fas fa-download'></i></a>" .
+                                "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
+                                "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Reactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-times'></i></a>" .
+                                "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                "</div>";
+                        } else if($user_level === "2") {
+                            $contract->options = "" .
+                                "<div class='btn-group'>" .
+                                "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-plus'></i></a>" .
+                                "</div>";
+                        } else if($user_level === "3") {
+                            $contract->options = "" .
+                                "<div class='btn-group'>" .
+                                "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                "</div>";
+                        } else {
+                            if($contract->advertiser_id === 0) {
+                                $contract->options = "" .
+                                    "<div class='btn-group'>" .
+                                    "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-download'></i></a>" .
+                                    "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-file-alt'></i></a>" .
+                                    "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-plus'></i></a>" .
+                                    "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Deactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-times'></i></a>" .
+                                    "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                    "   <a href='#delete-contract-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Remove Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-trash'></i></a>" .
+                                    "</div>";
+                            } else if($contract->agency_id === 0) {
+                                $contract->options = "" .
+                                    "<div class='btn-group'>" .
+                                    "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-download'></i></a>" .
+                                    "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-file-alt'></i></a>" .
+                                    "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-plus'></i></a>" .
+                                    "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Deactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-times'></i></a>" .
+                                    "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                    "   <a href='#delete-contract-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Remove Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-trash'></i></a>" .
+                                    "</div>";
+                            } else {
+                                $contract->options = "" .
+                                    "<div class='btn-group'>" .
+                                    "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark'><i class='fas fa-download'></i></a>" .
+                                    "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
+                                    "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-plus'></i></a>" .
+                                    "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Deactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-times'></i></a>" .
+                                    "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                    "   <a href='#delete-contract-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Remove Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-trash'></i></a>" .
+                                    "</div>";
+                            }
+                        }
+
+                    } else if ($contract->is_active === 0) {
+                        $contract->status = "<div class='badge badge-danger text-center'>Inactive</div>";
+
+                        if($user_level === "1") {
+                            $contract->options = "" .
+                                "<div class='btn-group'>" .
+                                "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark'><i class='fas fa-download'></i></a>" .
+                                "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
+                                "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-plus'></i></a>" .
+                                "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Reactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-check'></i></a>" .
+                                "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                "</div>";
+                        } else if($user_level === "2") {
+                            $contract->options = "" .
+                                "<div class='btn-group'>" .
+                                "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                "</div>";
+                        } else if($user_level === "3") {
+                            $contract->options = "" .
+                                "<div class='btn-group'>" .
+                                "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                "</div>";
+                        } else {
+                            if($contract->advertiser_id === 0) {
+                                $contract->options = "" .
+                                    "<div class='btn-group'>" .
+                                    "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-download'></i></a>" .
+                                    "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-file-alt'></i></a>" .
+                                    "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-plus'></i></a>" .
+                                    "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Reactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-check'></i></a>" .
+                                    "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                    "   <a href='#delete-contract-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Remove Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-trash'></i></a>" .
+                                    "</div>";
+                            } else if($contract->agency_id === 0) {
+                                $contract->options = "" .
+                                    "<div class='btn-group'>" .
+                                    "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-download'></i></a>" .
+                                    "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-file-alt'></i></a>" .
+                                    "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-plus'></i></a>" .
+                                    "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Reactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-check'></i></a>" .
+                                    "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                    "   <a href='#delete-contract-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Remove Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-trash'></i></a>" .
+                                    "</div>";
+                            } else {
+                                $contract->options = "" .
+                                    "<div class='btn-group'>" .
+                                    "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark'><i class='fas fa-download'></i></a>" .
+                                    "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
+                                    "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-plus'></i></a>" .
+                                    "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Reactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-check'></i></a>" .
+                                    "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                    "   <a href='#delete-contract-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Remove Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-trash'></i></a>" .
+                                    "</div>";
+                            }
+                        }
+                    }
+                }
+
+                return $contracts;
+            }
+
             $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
                 ->where('bo_type', '=', 'normal')
                 ->where('is_active', '=', '1')
@@ -82,6 +310,230 @@ class ContractController extends Controller
                     ->get();
             }
         } else {
+            // filtering the datatables by year.
+            if($request['filter'] == true) {
+                $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'normal')
+                    ->where('is_active', '=', '1')
+                    ->whereYear('created_at', $request['year'])
+                    ->orderBy('created_at')
+                    ->get();
+
+                if($request['inactive'] == true) {
+                    $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                        ->where('bo_type', '=', 'normal')
+                        ->where('is_active', '=', '0')
+                        ->whereYear('created_at', $request['year'])
+                        ->orderBy('created_at')
+                        ->get();
+                }
+
+                if($request['parent'] == true) {
+                    $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                        ->where('bo_type', '=', 'parent')
+                        ->where('is_active', '=', '1')
+                        ->whereYear('created_at', $request['year'])
+                        ->orderBy('created_at')
+                        ->get();
+                }
+
+                if($request['inactive_parent'] == true) {
+                    $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                        ->where('bo_type', '=', 'parent')
+                        ->where('is_active', '=', '0')
+                        ->whereYear('created_at', $request['year'])
+                        ->orderBy('created_at')
+                        ->get();
+                }
+
+                if($request['child_bo'] == true) {
+                    $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                        ->where('bo_type', '=', 'child')
+                        ->where('is_active', '=', '1')
+                        ->whereYear('created_at', $request['year'])
+                        ->orderBy('created_at')
+                        ->get();
+                }
+
+                if($request['inactive_child_bo'] == true) {
+                    $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
+                        ->where('bo_type', '=', 'child')
+                        ->where('is_active', '=', '0')
+                        ->whereYear('created_at', $request['year'])
+                        ->orderBy('created_at')
+                        ->get();
+                }
+
+                foreach ($contracts as $contract) {
+                    // getting the radio stations by breaking down the data from the string
+                    $manila = preg_match('/DWRX Manila;/', $contract['station']);
+                    $another_manila_alias = preg_match('/DWRX 93.1 Manila;/', $contract['station']);
+                    $cebu = preg_match('/DYBT Cebu;/', $contract['station']);
+                    $another_cebu_alias = preg_match('/DYBT 105.9 Cebu;/', $contract['station']);
+                    $davao = preg_match('/DXBT Davao;/', $contract['station']);
+                    $another_davao_alias = preg_match('/DXBT 99.5 Davao;/', $contract['station']);
+
+                    $stations = [];
+
+                    if($manila === 1 || $another_manila_alias === 1) {
+                        array_push($stations, '<div class="badge badge-primary text-center">Manila</div>');
+                    }
+
+                    if($cebu === 1 || $another_cebu_alias) {
+                        array_push($stations, '<div class="badge badge-warning text-center">Cebu</div>');
+                    }
+
+                    if($davao === 1 || $another_davao_alias) {
+                        array_push($stations, '<div class="badge badge-dark text-center">Davao</div>');
+                    }
+
+                    $contract['station'] = $stations;
+
+                    if ($contract->is_printed === 1) {
+                        $contract->print_status = "<div class='badge badge-success text-center'>Printed</div>";
+                    } else if ($contract->is_printed === 0) {
+                        $contract->print_status = "<div class='badge badge-danger text-center'>Pending</div>";
+                    }
+
+                    if($contract->advertiser_id === 0) {
+                        $contract->advertiser_name = '<div class="badge badge-danger text-center">Undefined</div>';
+                    } else {
+                        $contract->advertiser_name = $contract->Advertiser->advertiser_name;
+                    }
+
+                    if($contract->agency_id === 0) {
+                        $contract->agency_name = '<div class="badge badge-danger text-center">Undefined</div>';
+                    } else {
+                        $contract->agency_name = $contract->Agency->agency_name;
+                    }
+
+                    $contract->short_contract_number = Str::limit($contract->contract_number, '20');
+
+                    $contract->short_bo_number = Str::limit($contract->bo_number, '15');
+
+                    if($contract->bo_type == "child") {
+                        $contract->short_parent_bo = Str::limit($contract->parent_bo, '15');
+                    }
+
+                    $contract->employee_name = $contract->Employee->first_name[0] . $contract->Employee->middle_name[0] . $contract->Employee->last_name[0];
+
+                    if ($contract->is_active === 1) {
+                        $contract->status = "<div class='badge badge-success text-center'>Active</div>";
+
+                        if($user_level === "1") {
+                            $contract->options = "" .
+                                "<div class='btn-group'>" .
+                                "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark'><i class='fas fa-download'></i></a>" .
+                                "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
+                                "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Reactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-times'></i></a>" .
+                                "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                "</div>";
+                        } else if($user_level === "2") {
+                            $contract->options = "" .
+                                "<div class='btn-group'>" .
+                                "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-plus'></i></a>" .
+                                "</div>";
+                        } else if($user_level === "3") {
+                            $contract->options = "" .
+                                "<div class='btn-group'>" .
+                                "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                "</div>";
+                        } else {
+                            if($contract->advertiser_id === 0) {
+                                $contract->options = "" .
+                                    "<div class='btn-group'>" .
+                                    "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-download'></i></a>" .
+                                    "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-file-alt'></i></a>" .
+                                    "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-plus'></i></a>" .
+                                    "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Deactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-times'></i></a>" .
+                                    "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                    "   <a href='#delete-contract-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Remove Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-trash'></i></a>" .
+                                    "</div>";
+                            } else if($contract->agency_id === 0) {
+                                $contract->options = "" .
+                                    "<div class='btn-group'>" .
+                                    "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-download'></i></a>" .
+                                    "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-file-alt'></i></a>" .
+                                    "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-plus'></i></a>" .
+                                    "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Deactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-times'></i></a>" .
+                                    "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                    "   <a href='#delete-contract-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Remove Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-trash'></i></a>" .
+                                    "</div>";
+                            } else {
+                                $contract->options = "" .
+                                    "<div class='btn-group'>" .
+                                    "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark'><i class='fas fa-download'></i></a>" .
+                                    "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
+                                    "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-plus'></i></a>" .
+                                    "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Deactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-times'></i></a>" .
+                                    "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                    "   <a href='#delete-contract-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Remove Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-trash'></i></a>" .
+                                    "</div>";
+                            }
+                        }
+
+                    } else if ($contract->is_active === 0) {
+                        $contract->status = "<div class='badge badge-danger text-center'>Inactive</div>";
+
+                        if($user_level === "1") {
+                            $contract->options = "" .
+                                "<div class='btn-group'>" .
+                                "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark'><i class='fas fa-download'></i></a>" .
+                                "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
+                                "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-plus'></i></a>" .
+                                "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Reactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-check'></i></a>" .
+                                "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                "</div>";
+                        } else if($user_level === "2") {
+                            $contract->options = "" .
+                                "<div class='btn-group'>" .
+                                "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                "</div>";
+                        } else if($user_level === "3") {
+                            $contract->options = "" .
+                                "<div class='btn-group'>" .
+                                "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                "</div>";
+                        } else {
+                            if($contract->advertiser_id === 0) {
+                                $contract->options = "" .
+                                    "<div class='btn-group'>" .
+                                    "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-download'></i></a>" .
+                                    "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-file-alt'></i></a>" .
+                                    "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-plus'></i></a>" .
+                                    "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Reactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-check'></i></a>" .
+                                    "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                    "   <a href='#delete-contract-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Remove Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-trash'></i></a>" .
+                                    "</div>";
+                            } else if($contract->agency_id === 0) {
+                                $contract->options = "" .
+                                    "<div class='btn-group'>" .
+                                    "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-download'></i></a>" .
+                                    "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-file-alt'></i></a>" .
+                                    "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark disabled' aria-disabled='true'><i class='fas fa-plus'></i></a>" .
+                                    "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Reactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-check'></i></a>" .
+                                    "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                    "   <a href='#delete-contract-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Remove Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-trash'></i></a>" .
+                                    "</div>";
+                            } else {
+                                $contract->options = "" .
+                                    "<div class='btn-group'>" .
+                                    "   <a href='".route('contracts.generate', $contract->id)."' tooltip title='Generate PDF' data-placement='bottom' class='btn btn-outline-dark'><i class='fas fa-download'></i></a>" .
+                                    "   <a href='".route('contracts.generate.text', $contract->id)."' tooltip title='Generate Text' data-displacement='bottom' class='btn btn-outline-dark'><i class='fas fa-file-alt'></i></a>" .
+                                    "   <a href='#add-sales-breakdown-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Add Sales Breakdown' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-plus'></i></a>" .
+                                    "   <a href='#contract-status-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Reactivate' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-check'></i></a>" .
+                                    "   <a href='#' data-action='view' data-open='contract' data-link='".route('contracts.show')."' data-id='".$contract->id."' tooltip title='View Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-edit'></i></a>" .
+                                    "   <a href='#delete-contract-modal' data-action='open' data-link='".route('contracts.show')."' data-id='".$contract->id."' modal='true' tooltip title='Remove Contract' data-placement='bottom' data-toggle='modal' class='btn btn-outline-dark'><i class='fas fa-trash'></i></a>" .
+                                    "</div>";
+                            }
+                        }
+                    }
+                }
+
+                return $contracts;
+            }
+
             $contracts = Contract::with('Agency', 'Advertiser', 'Employee')
                 ->where('bo_type', '=', 'normal')
                 ->where('is_active', '=', '1')
@@ -181,6 +633,10 @@ class ContractController extends Controller
             $contract->short_contract_number = Str::limit($contract->contract_number, '20');
 
             $contract->short_bo_number = Str::limit($contract->bo_number, '15');
+
+            if($contract->bo_type == "child") {
+                $contract->short_parent_bo = Str::limit($contract->parent_bo, '15');
+            }
 
             $contract->employee_name = $contract->Employee->first_name[0] . $contract->Employee->middle_name[0] . $contract->Employee->last_name[0];
 
@@ -302,27 +758,93 @@ class ContractController extends Controller
             $switchTo = $request['switch'];
 
             if($switchTo == "parent") {
-                return view('webpages.contract.bo.parent.active');
+                $contract_years = Contract::with('Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'normal')
+                    ->where('is_active', '=', '1')
+                    ->get();
+
+                foreach ($contract_years as $year) {
+                    $year->year = date('Y', strtotime($year->created_at));
+                }
+
+                $years = $contract_years->groupBy('year');
+
+                return view('webpages.contract.bo.parent.active', compact('years'));
             }
 
             if($switchTo === "inactive_parent") {
-                return view('webpages.contract.bo.parent.inactive');
+                $contract_years = Contract::with('Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'normal')
+                    ->where('is_active', '=', '1')
+                    ->get();
+
+                foreach ($contract_years as $year) {
+                    $year->year = date('Y', strtotime($year->created_at));
+                }
+
+                $years = $contract_years->groupBy('year');
+
+                return view('webpages.contract.bo.parent.inactive', compact('years'));
             }
 
             if($switchTo == "child_bo") {
-                return view('webpages.contract.bo.child.active');
+                $contract_years = Contract::with('Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'normal')
+                    ->where('is_active', '=', '1')
+                    ->get();
+
+                foreach ($contract_years as $year) {
+                    $year->year = date('Y', strtotime($year->created_at));
+                }
+
+                $years = $contract_years->groupBy('year');
+
+                return view('webpages.contract.bo.child.active', compact('years'));
             }
 
             if($switchTo === "inactive_child_bo") {
-                return view('webpages.contract.bo.child.inactive');
+                $contract_years = Contract::with('Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'normal')
+                    ->where('is_active', '=', '1')
+                    ->get();
+
+                foreach ($contract_years as $year) {
+                    $year->year = date('Y', strtotime($year->created_at));
+                }
+
+                $years = $contract_years->groupBy('year');
+
+                return view('webpages.contract.bo.child.inactive', compact('years'));
             }
 
             if($switchTo == "inactive") {
-                return view('webpages.contract.inactive');
+                $contract_years = Contract::with('Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'normal')
+                    ->where('is_active', '=', '1')
+                    ->get();
+
+                foreach ($contract_years as $year) {
+                    $year->year = date('Y', strtotime($year->created_at));
+                }
+
+                $years = $contract_years->groupBy('year');
+
+                return view('webpages.contract.inactive', compact('years'));
             }
 
             if($request->has('navigation')) {
-                return view('webpages.contracts');
+                $contract_years = Contract::with('Agency', 'Advertiser', 'Employee')
+                    ->where('bo_type', '=', 'normal')
+                    ->where('is_active', '=', '1')
+                    ->get();
+
+                foreach ($contract_years as $year) {
+                    $year->year = date('Y', strtotime($year->created_at));
+                }
+
+                $years = $contract_years->groupBy('year');
+
+                return view('webpages.contracts', compact('years'));
             }
 
             return $contracts;
@@ -486,16 +1008,15 @@ class ContractController extends Controller
             ->where('advertiser_code', '!=', $contract['advertiser_code'])
             ->get();
 
-        if($request->ajax()) {
-            if($request['activate']) {
-                $contract->is_active = $request['status'];
+        if($request['activate']) {
+            $contract->is_active = $request['status'];
+            $contract->save();
 
-                if($contract->is_active === 1) {
-                    return response()->json(['status' => 'success', 'message' => 'A contract has been activated!']);
-                }
-
-                return response()->json(['status' => 'success', 'message' => 'A contract has been deactivated!']);
+            if($contract->is_active === 1) {
+                return response()->json(['status' => 'success', 'message' => 'A contract has been activated!']);
             }
+
+            return response()->json(['status' => 'success', 'message' => 'A contract has been deactivated!']);
         }
 
         $request['station'] = implode(" ", $request['station']);

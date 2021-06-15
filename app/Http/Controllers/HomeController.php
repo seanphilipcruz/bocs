@@ -77,6 +77,16 @@ class HomeController extends Controller
 
         foreach ($monthlyAESales as $sales) {
             $sales->name = $sales->Employee->first_name . ' ' . $sales->Employee->last_name;
+
+
+            if($sales->Employee->color == null) {
+                $sales->color = 'rgb(0, 0, 0)';
+            } else {
+                // Converting the Hex Color Code of the Account Executive
+                $hex_color = $this->hexToRGB($sales->Employee->color);
+                $color = 'rgb('.implode(",", $hex_color).')';
+                $sales->color = $color;
+            }
         }
 
         $accountExecutives = $monthlyAESales->groupBy('name');

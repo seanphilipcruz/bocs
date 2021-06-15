@@ -2,7 +2,19 @@
     <div class="row">
         <div class="col-md-12">
             <div class="fa-pull-left">
-                <a href="{{ route('contracts') }}" id="contracts" navigation class="btn btn-outline-dark"><i class="fas fa-arrow-left"></i>  Back</a>
+                @if($contract->is_active === 0 && $contract->bo_type === "normal")
+                    <a href="#" class="btn btn-outline-dark" data-action="switch" data-switch="inactive" data-link="{{ route('contracts') }}" title="Back to non-active contracts"><i class="fas fa-arrow-left"></i>  Back</a>
+                @elseif($contract->is_active === 0 && $contract->bo_type === "parent")
+                    <a href="#" class="btn btn-outline-dark" data-action="switch" data-switch="inactive_parent" data-link="{{ route('contracts') }}" title="Back to non-active child contracts"><i class="fas fa-arrow-left"></i>  Back</a>
+                @elseif($contract->is_active === 0 && $contract->bo_type === "child")
+                    <a href="#" class="btn btn-outline-dark" data-action="switch" data-switch="inactive_child_bo" data-link="{{ route('contracts') }}" title="Back to non-active child contracts"><i class="fas fa-arrow-left"></i>  Back</a>
+                @elseif($contract->is_active === 1 && $contract->bo_type === "parent")
+                    <a href="#" class="btn btn-outline-dark" data-action="switch" data-switch="parent" data-link="{{ route('contracts') }}" title="Back to Parent BO"><i class="fas fa-folder-plus"></i>  Back</a>
+                @elseif($contract->is_active === 1 && $contract->bo_type === "child")
+                    <a href="#" class="btn btn-outline-dark" data-action="switch" data-switch="child_bo" data-link="{{ route('contracts') }}" title="Back to Child BO"><i class="fas fa-folder-minus"></i>  Back</a>
+                @elseif($contract->is_active === 1 && $contract->bo_type === "normal")
+                    <a href="{{ route('contracts') }}" id="contracts" navigation class="btn btn-outline-dark"><i class="fas fa-arrow-left"></i>  Back</a>
+                @endif
             </div>
             <div class="fa-pull-right">
                 <div class="btn-group">

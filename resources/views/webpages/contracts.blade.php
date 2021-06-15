@@ -8,6 +8,7 @@
             </div>
             <div class="fa-pull-right btn-group">
                 <a href="#" class="btn btn-outline-dark" data-action='create' data-link='{{ route('contracts.create') }}'><i class="fas fa-plus"></i>  New Contract</a>
+                <a href="#filter-modal" class="btn btn-outline-dark" data-toggle="modal"><i class="fas fa-search"></i>  Filter</a>
             </div>
         </div>
     </div>
@@ -31,7 +32,7 @@
                     </thead>
                     <tbody>
                     <tr id="tableBody">
-                        <td colspan="8">
+                        <td colspan="9">
                             <div class="alert alert-danger m-0 text-center">
                                 No Data Found
                             </div>
@@ -51,6 +52,38 @@
 </div>
 
 <!-- Modals -->
+<div class="modal fade" id="filter-modal" tabindex="-1" role="dialog" aria-labelledby="filter-modal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Filter Contracts by Year</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="filter-contracts-form" action="" method="GET">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="hidden" name="bo_type" value="normal">
+                        <label for="filter_contract">Filter Contracts By:</label>
+                        <select id="filter_contract" name="year" class="custom-select">
+                            @foreach($years as $key => $year)
+                                <option value="{{ $key }}">{{ $key }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="update-invoice-modal" tabindex="-1" role="dialog" aria-labelledby="update-invoice-modal" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -93,7 +126,8 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
-                    <input type="hidden" id="contract_status_id" name="contract_id">
+                    <input type="hidden" name="activate" value="true">
+                    <input type="hidden" id="contract_status" name="status">
                     <div id="contract-status-form-body" class="text-center"></div>
                 </div>
                 <div class="modal-footer">
@@ -133,7 +167,6 @@
         </div>
     </div>
 </div>
-
 
 <div class="modal fade" id="add-sales-breakdown-modal" tabindex="-1" role="dialog" aria-labelledby="add-sales-breakdown-modal" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -239,8 +272,11 @@
 <script type="text/javascript">
     $(document).off('submit');
 
-    // datatable
-    contractsTable = $('#contractsTable').DataTable({
+    // Table
+    contracts_table = $('#contractsTable');
+
+    // Datatable
+    contractsTable = contracts_table.DataTable({
         ajax: {
             url: '{{ route('contracts') }}',
             dataSrc: '',
@@ -259,6 +295,47 @@
         order: [
             [ 0, 'desc']
         ]
+    });
+
+    $(document).on('change', '#filter_contract', function() {
+        let year = $(this).val();
+
+        contracts_table.DataTable().clear().destroy();
+
+        contracts_table.DataTable({
+            ajax: {
+                url: '{{ route('contracts') }}',
+                dataSrc: '',
+                data: {
+                    'filter': true,
+                    'year': year
+                },
+            },
+            columns: [
+                { data: 'id' },
+                { data: 'short_contract_number' },
+                { data: 'short_bo_number' },
+                { data: 'station' },
+                { data: 'advertiser_name' },
+                { data: 'agency_name' },
+                { data: 'employee_name' },
+                { data: 'print_status' },
+                { data: 'options' }
+            ],
+            order: [
+                [ 0, 'desc']
+            ]
+        });
+
+        Toast.fire({
+            'icon': 'success',
+            'title': 'Viewing contracts in the year ' + year
+        });
+
+        document.title = 'Contracts - Active ('+year+')';
+        window.history.pushState("", "", "/contracts/filter/"+year);
+
+        $('#filter-modal').modal('hide');
     });
 
     $('#add-sales-breakdown-modal, #update-invoice-modal').on('hide.bs.modal', function() {

@@ -21,6 +21,7 @@ class CreateEmployeesTable extends Migration
             $table->string('middle_name')->nullable();
             $table->string('date_of_birth');
             $table->string('nickname');
+            $table->string('color', 20);
             $table->string('username');
             $table->string('password', 60)->nullable();
             $table->string('remember_token', 100)->nullable();

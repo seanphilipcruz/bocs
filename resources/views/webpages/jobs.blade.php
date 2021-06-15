@@ -226,6 +226,9 @@
             { data: 'status' },
             { data: 'options' },
         ],
+        order: [
+            [ 2, 'asc' ]
+        ]
     });
 
     setInterval(() => {
