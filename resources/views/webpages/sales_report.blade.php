@@ -225,7 +225,8 @@
     srTable = $('#salesReportTable').DataTable({
         order: [
             [ 0, 'desc' ],
-            [ 1, 'desc' ]
+            [ 1, 'desc' ],
+            [ 4, 'asc' ]
         ]
     });
 </script>
