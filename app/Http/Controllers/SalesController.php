@@ -802,9 +802,9 @@ class SalesController extends Controller
             }
         }
 
-        $advertisers = Advertiser::where('is_active', '=', '1')->get();
+        $advertisers = Advertiser::orderBy('advertiser_name')->where('is_active', '=', '1')->get();
 
-        $agencies = Agency::where('is_active', '=', '1')->get();
+        $agencies = Agency::orderBy('agency_name')->where('is_active', '=', '1')->get();
 
         $executives = DB::table('sales')
             ->join('employees', 'sales.ae', '=', 'employees.id')
